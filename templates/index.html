@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Check a basil leaf with a locally trained model and explore the complete training evidence.">
+  <title>Basil Lab — Leaf quality, thoughtfully explored</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%231e483b'/%3E%3Cpath d='M10 28C5 10 22 8 31 9C32 26 19 31 10 28M10 28L25 15' fill='%23c2d79c' stroke='%231e483b'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/static/style.css"><script src="/static/app.js" defer></script>
+</head>
+<body>
+{% macro leaf() %}<svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M7 25C2 9 17 5 27 5c1 15-8 23-20 20Z" fill="currentColor"/><path d="M5 28 22 11M12 21l-1-7m6 3 6 1" stroke="var(--leaf-vein, #fff)" stroke-width="1.4" stroke-linecap="round"/></svg>{% endmacro %}
+{% macro pct(v) %}{{ '%.2f'|format(v*100) }}%{% endmacro %}
+<a class="skip" href="#checker">Skip to leaf checker</a>
+<header class="header"><div class="nav wrap">
+  <a class="brand" href="#top"><span class="brand-icon">{{ leaf() }}</span>Basil<span class="brand-light">Lab</span><span class="brand-divider"></span><span class="brand-sub">LEAF QUALITY RESEARCH</span></a>
+  <nav aria-label="Main navigation"><a href="#checker">Leaf checker</a><a href="#report">Training report</a><a href="#method">Our method</a></nav>
+  <span class="local-status"><i></i> Running locally</span>
+</div></header>
+<main id="top">
+  <section class="hero wrap">
+    <div class="hero-copy"><p class="eyebrow"><span></span> FROM LEAF TO LEARNING</p>
+      <h1>A closer look<br>at <em>every leaf.</em></h1>
+      <p class="hero-description">Explore basil leaf quality with a trained machine learning model. Check a photo, understand the prediction, and see the evidence behind it.</p>
+      <div class="hero-actions"><a href="#checker" class="button primary">Check a leaf <span aria-hidden="true">↗</span></a><a href="#report" class="text-link">Explore the training <span aria-hidden="true">→</span></a></div>
+      <div class="hero-note"><span class="tiny-leaf">{{ leaf() }}</span> Real dataset. Measured results. Transparent limitations.</div>
+    </div>
+    <div class="hero-visual"><div class="specimen-label">OCIMUM · BASIL COLLECTION <span>01 / STUDY</span></div>
+      <img class="hero-photo" src="/example/0.jpg" alt="A healthy-labelled basil leaf from the IEEE dataset" fetchpriority="high">
+      <div class="specimen-caption"><span>From our dataset<br><strong>Basil leaf specimen</strong></span><span class="photo-source">IEEE DataPort<br>Healthy-labelled example</span></div>
+      <div class="photo-badge">{{ leaf() }} <span>Rooted in<br><strong>real observations.</strong></span></div>
+    </div>
+  </section>
+  <div class="wrap metrics-strip" aria-label="Training highlights">
+    <div><span class="metric-label">HELD-OUT TEST ACCURACY</span><strong>{{ pct(m.accuracy) }}</strong><small>{{ m.test_images }} test images · not a confidence score</small></div>
+    <div><span class="metric-label">IMAGES USED</span><strong>{{ audit.valid_unique_count }}<span> images</span></strong><small>{{ audit.input_count }} downloaded · {{ audit.exact_duplicates_removed }} duplicate removed</small></div>
+    <div><span class="metric-label">TRAIN / TEST</span><strong>{{ r.development_images }} <span>/</span> {{ r.test_images }}</strong><small>Grouped split · approximately 80 / 20</small></div>
+    <div><span class="metric-label">SELECTED MODEL</span><strong class="model-metric">{{ r.selected_model }}</strong><small>Best grouped validation macro-F1</small></div>
+  </div>
+
+  <section id="checker" class="section wrap">
+    <div class="section-heading"><div><p class="eyebrow">01 / THE LEAF CHECKER</p><h2>Meet your leaf.</h2></div><p>Use a clear basil leaf photo. Your image is processed<br class="desktop"> on this computer and is never saved or used for training.</p></div>
+    <div class="checker-grid">
+      <div class="upload-card">
+        <div class="card-top"><h3>Upload a leaf photo</h3><span class="tag">LOCAL & PRIVATE</span></div>
+        <label class="drop-zone" id="drop-zone" for="image-input">
+          <input id="image-input" type="file" accept="image/jpeg,image/png,image/webp,image/bmp,image/tiff" aria-label="Choose a basil leaf photo">
+          <span class="upload-icon">{{ leaf() }}<b aria-hidden="true">+</b></span>
+          <strong>Drop your leaf photo here</strong><span>or <u>browse files</u> on your computer</span>
+          <small>JPG, PNG, WebP, BMP or TIFF · up to 12 MB</small>
+        </label>
+        <div id="preview-wrap" class="preview-wrap" hidden><img id="preview" alt="Selected leaf photo"><div><strong id="file-name"></strong><small id="file-detail"></small></div><button class="icon-button" id="remove-image" aria-label="Remove selected photo">×</button></div>
+        <button id="analyze" class="button primary analyze" disabled>Analyze leaf <span aria-hidden="true">↗</span></button>
+        <p class="error" id="upload-error" role="alert" hidden></p>
+        <div class="samples"><span>No photo handy? Try a dataset example</span><div>{% for example in examples %}<button class="sample-button" data-example="{{ loop.index0 }}"><img src="/example/{{ loop.index0 }}.jpg" alt="" loading="lazy">{{ example.label }} example <span>↗</span></button>{% endfor %}</div><small>Examples are from the existing test set, not new independent validation.</small></div>
+      </div>
+      <div class="result-card" id="result-card" aria-live="polite" aria-atomic="true">
+        <div class="card-top"><h3>Your leaf assessment</h3><span class="tag subtle" id="result-status">AWAITING PHOTO</span></div>
+        <div class="empty-result" id="empty-result"><span class="result-leaf">{{ leaf() }}</span><h3>A little observation.<br>A useful starting point.</h3><p>Upload a photo to see whether its visual patterns match healthy or unhealthy basil images in the training data.</p><div class="class-legend"><span><i></i>Healthy</span><span><i></i>Unhealthy</span></div></div>
+        <div id="prediction-result" hidden><p class="eyebrow">MODEL PREDICTION</p><h3 id="prediction-label"></h3><p id="prediction-description"></p><div class="prediction-facts"><div><span>Model</span><strong id="prediction-model"></strong></div><div><span>Image dimensions</span><strong id="prediction-size"></strong></div><div><span>Processing time</span><strong id="prediction-time"></strong></div></div><p id="example-notice" class="example-notice" hidden></p></div>
+        <div class="result-caution"><strong>A research tool, not a diagnosis.</strong><p>This model cannot reliably reject non-leaf or non-basil images. It does not identify a disease or determine whether a leaf is safe to consume. No calibrated confidence score is provided.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="report" class="report-area"><div class="wrap section">
+    <div class="section-heading"><div><p class="eyebrow">02 / THE EVIDENCE</p><h2>Good research shows its work.</h2></div><a class="button outline" href="/download/notebook">Download notebook <span>↓</span></a></div>
+    <div class="coverage-notice"><span class="notice-icon" aria-hidden="true">!</span><div><strong>{{ 'A partial dataset. A clearly scoped result.' if coverage.partial_dataset else 'Dataset coverage' }}</strong><p>{{ coverage.downloaded_images }} of {{ coverage.expected_images }} listed images are available. {{ coverage.missing_images }} are missing after download rate limits. No Pune images are represented in this run. These scores describe this available subset, not the complete IEEE dataset.</p></div><span class="tag amber">{{ 'PARTIAL DOWNLOAD' if coverage.partial_dataset else 'DOWNLOAD COMPLETE' }}</span></div>
+    <div class="report-grid">
+      <article class="panel dataset-panel"><div class="card-top"><h3>The data we used</h3><span class="micro">SOURCE & COVERAGE</span></div><p class="muted">Healthy and unhealthy basil leaf images from IEEE DataPort. Three regional healthy folders map to one Healthy class.</p>
+        <div class="table-scroll"><table><caption class="sr-only">Downloaded and missing images by source folder</caption><thead><tr><th>Source folder</th><th>Available</th><th>Missing</th></tr></thead><tbody>{% for f in coverage.folders %}<tr><td><strong>{{ f.folder.split('_')[0] if f['class']=='Healthy' else 'Unhealthy basil' }}</strong><small>{{ f['class'] }} · {{ f.expected }} expected</small></td><td>{{ f.downloaded }}</td><td><span class="{{ 'missing-count' if f.missing else 'complete-count' }}">{{ f.missing }}</span></td></tr>{% endfor %}</tbody><tfoot><tr><th>Total download</th><td>{{ coverage.downloaded_images }}</td><td>{{ coverage.missing_images }}</td></tr></tfoot></table></div>
+        <div class="audit-line"><span><strong>{{ audit.exact_duplicates_removed }}</strong> exact duplicate removed</span><span><strong>{{ audit.rejected_images|length }}</strong> corrupt images rejected</span></div>
+        <a class="text-link source-link" href="{{ audit.source }}" target="_blank" rel="noopener noreferrer">View original dataset · DOI {{ audit.doi }} ↗</a>
+      </article>
+      <article class="panel split-panel"><div class="card-top"><h3>A fair separation</h3><span class="micro">TRAINING ≠ TESTING</span></div><div class="split-number"><strong>{{ r.development_images }}</strong><span>training images</span><strong>{{ r.test_images }}</strong><span>test images</span></div>
+        <div class="split-bar" role="img" aria-label="{{ r.development_images }} training and {{ r.test_images }} test images"><div style="width:{{ r.development_images/audit.valid_unique_count*100 }}%"></div><div style="width:{{ r.test_images/audit.valid_unique_count*100 }}%"></div></div><div class="split-legend"><span><i></i>Development / final training</span><span><i></i>Untouched test set</span></div>
+        <table><caption class="sr-only">Actual unique images per class and split</caption><thead><tr><th>Class</th><th>Train</th><th>Test</th><th>Total</th></tr></thead><tbody>{% for row in r.split_counts if row.label != 'TOTAL' %}<tr><th>{{ row.label }}</th><td>{{ row['Development / final training'] }}</td><td>{{ row['Untouched test'] }}</td><td>{{ row['All unique images'] }}</td></tr>{% endfor %}</tbody></table>
+        <div class="inset-note"><strong>3-fold grouped cross-validation</strong><p>Each fold used {{ r.cv_folds[0].training_images }} training and {{ r.cv_folds[0].validation_images }} validation images within the {{ r.development_images }}-image development pool. The winner was then fitted on all {{ r.development_images }} development images.</p></div><p class="fine">{{ audit.split_groups }} duplicate-similarity groups · random seed {{ r.seed }}. Groups stay together across splits. Similarity grouping cannot establish independent plant identities.</p>
+      </article>
+    </div>
+
+    <article class="panel comparison-panel"><div class="section-heading compact"><div><p class="eyebrow">MODEL SELECTION</p><h3>Compared fairly. Chosen on validation.</h3></div><span class="tag">{{ r.comparison|length }} CANDIDATE SETTINGS</span></div><p class="muted">Models were ranked by mean validation macro-F1 across three grouped folds. Macro-F1 gives both classes equal weight. The test set was excluded from model selection.</p>
+      <div class="table-scroll"><table class="comparison-table"><caption class="sr-only">Model comparison on cross-validation, not the held-out test set</caption><thead><tr><th>Model</th><th>Validation macro-F1</th><th>Fold variation (SD)</th><th>Validation accuracy</th><th>Mean fit time</th></tr></thead><tbody>{% for c in r.comparison %}<tr class="{{ 'winner' if loop.first else '' }}"><td><strong>{{ c.model }}</strong>{% if loop.first %}<span class="winner-label">SELECTED</span>{% endif %}</td><td><div class="score-cell"><div class="score-track"><span style="width:{{ c.cv_macro_f1*100 }}%"></span></div><strong>{{ '%.4f'|format(c.cv_macro_f1) }}</strong></div></td><td>± {{ '%.4f'|format(c.cv_std) }}</td><td>{{ pct(c.cv_accuracy) }}</td><td>{{ '%.3f'|format(c.mean_fit_seconds) }} s</td></tr>{% endfor %}</tbody></table></div>
+      <div class="selection-reason"><span class="reason-icon">{{ leaf() }}</span><div><strong>Why {{ r.selected_model }}?</strong><p>{{ r.selection_reason }} Its performance makes it a useful prototype for similar images; it still needs validation on new plants and locations.</p></div></div>
+      <p class="fine">Classical models only in this run. MobileNet transfer learning was not enabled. Fit times are measured on this computer and exclude feature extraction.</p>
+    </article>
+
+    <div class="report-grid evaluation-grid">
+      <article class="panel"><div class="card-top"><h3>The final test</h3><span class="tag">{{ r.test_images }} HELD-OUT IMAGES</span></div><div class="evaluation-metrics"><div><strong>{{ pct(m.accuracy) }}</strong><span>Accuracy</span></div><div><strong>{{ pct(m.balanced_accuracy) }}</strong><span>Balanced accuracy</span></div><div><strong>{{ '%.4f'|format(m.macro_f1) }}</strong><span>Macro-F1</span></div></div>
+        <div class="table-scroll"><table><caption class="sr-only">Held-out test performance for each class</caption><thead><tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1</th><th>Images</th></tr></thead><tbody>{% for label in m.classes %}{% set cr=m.classification_report[label] %}<tr><th>{{ label }}</th><td>{{ pct(cr.precision) }}</td><td>{{ pct(cr.recall) }}</td><td>{{ '%.4f'|format(cr['f1-score']) }}</td><td>{{ cr.support|int }}</td></tr>{% endfor %}</tbody></table></div>
+        <p class="fine">95% group-bootstrap interval for macro-F1: {{ '%.4f'|format(m.macro_f1_group_bootstrap_95_interval[0]) }}–{{ '%.4f'|format(m.macro_f1_group_bootstrap_95_interval[1]) }}. Describes uncertainty within this holdout, not real-world performance everywhere.</p>
+        <details class="metric-help"><summary>What do these metrics mean?</summary><p><strong>Accuracy:</strong> fraction of all predictions that were correct. <strong>Balanced accuracy:</strong> average recall across classes. <strong>Precision:</strong> how often a predicted class was right. <strong>Recall:</strong> how much of a true class was found. <strong>F1:</strong> balances precision and recall.</p></details>
+      </article>
+      <article class="panel"><div class="card-top"><h3>Where the model made mistakes</h3><span class="micro">CONFUSION MATRIX</span></div><p class="muted">Rows are actual labels. Columns are model predictions.</p><table class="confusion"><thead><tr><th>Actual ↓ / Predicted →</th>{% for label in m.classes %}<th>{{ label }}</th>{% endfor %}</tr></thead><tbody>{% for row in m.confusion_matrix %}{% set ri=loop.index0 %}<tr><th>{{ m.classes[ri] }}</th>{% for value in row %}<td class="{{ 'correct' if ri==loop.index0 else 'incorrect' }}"><strong>{{ value }}</strong><small>{{ 'Correct' if ri==loop.index0 else 'Misclassified' }}</small></td>{% endfor %}</tr>{% endfor %}</tbody></table><div class="mistake-note"><strong>{{ m.confusion_matrix[1][0] }} unhealthy leaves were predicted healthy.</strong><p>A healthy prediction does not rule out a problem. Visually inspect the leaf and seek expert advice when needed.</p></div></article>
+    </div>
+  </div></section>
+
+  <section id="method" class="section wrap"><div class="section-heading"><div><p class="eyebrow">03 / FROM DATA TO DEPLOYMENT</p><h2>Every stage, explained.</h2></div><p>A reproducible workflow in Python.<br class="desktop"> Open a stage to see what actually happened.</p></div>
+    <div class="method-grid"><div class="method-intro"><span class="method-leaf">{{ leaf() }}</span><h3>Learn the process.<br><em>Understand the result.</em></h3><p>Training stays in the self-contained notebook. This website loads its saved model and applies the same image processing to each new photo.</p><a class="text-link" href="/download/notebook">Get the executed notebook ↓</a></div><div class="stages">
+      <details open><summary><span>01</span>Data collection<i>+</i></summary><p>We imported {{ audit.input_count }} images from your ZIP, using only explicitly labelled source folders. Healthy regional folders were combined into Healthy; Basil_Plant_Unhealthy became Unhealthy. {{ coverage.missing_images }} listed images are absent. No replacement or synthetic training images were added.</p></details>
+      <details><summary><span>02</span>Data preprocessing<i>+</i></summary><p>Decode images, correct camera orientation, and convert to RGB. Reject invalid images, remove exact pixel duplicates, and group near-duplicates by perceptual hash (Hamming distance ≤ 4). This run retained {{ audit.valid_unique_count }} unique images. The grouped train/test split uses seed {{ r.seed }}. Plant identities remain unverified.</p></details>
+      <details><summary><span>03</span>Feature engineering<i>+</i></summary><p>Each image becomes {{ r.feature_count }} numeric features: RGB and HSV color histograms and statistics (108), local binary pattern texture (10), and HOG edge features (1,764). Resized copies use 128 × 128 pixels for color/texture and 64 × 64 for edges. Original images are unchanged. No image augmentation was used.</p></details>
+      <details><summary><span>04</span>Model selection<i>+</i></summary><p>Compare logistic regression, RBF SVM, random forest and nearest neighbors against a majority baseline. Seven parameter settings were tested on identical grouped validation folds. Scaling for logistic regression, SVM and nearest neighbors is fitted inside each training fold. Select by macro-F1; exact ties use fit time then name. No test labels guide selection.</p></details>
+      <details><summary><span>05</span>Model training<i>+</i></summary><p>The chosen {{ r.selected_model }} was fitted afresh on {{ r.development_images }} development images. {% if r.model_parameters.n_estimators is defined %}This model uses {{ r.model_parameters.n_estimators }} trees, balanced class weights, a minimum of {{ r.model_parameters.min_samples_leaf }} samples per leaf, and square-root feature sampling.{% else %}The fitted pipeline includes any scaling needed by the selected classifier; all fitted parameters come only from development data.{% endif %} It learns visual classification rules; it does not learn a medical diagnosis.</p></details>
+      <details><summary><span>06</span>Model evaluation<i>+</i></summary><p>Evaluate the selected model on {{ r.test_images }} held-out images: {{ pct(m.accuracy) }} accuracy and {{ '%.4f'|format(m.macro_f1) }} macro-F1. Report class precision, recall, the confusion matrix and a 500-resample group bootstrap interval. Repeatedly tuning on this test set would invalidate it as an independent final assessment.</p></details>
+      <details><summary><span>07</span>Model deployment<i>+</i></summary><p>The notebook saves the model, dataset fingerprint, split manifests, metrics and package versions. This Flask website serves the trusted saved model locally using Waitress. Uploads stay in memory on your computer; they are not stored, sent to an external model service, or added to training. After retraining the notebook, restart the website to load the new matching model and report.</p></details>
+    </div></div>
+  </section>
+
+  <section class="conclusion wrap"><div><p class="eyebrow">THE CONCLUSION</p><h2>Promising results.<br><em>Room to grow.</em></h2></div><div><p>{{ r.selected_model }} achieved <strong>{{ pct(m.accuracy) }} accuracy on {{ r.test_images }} test images</strong>, after selection by grouped validation. It is a useful starting point for classifying images similar to this dataset.</p><p>The next step is independent testing on new plants, backgrounds, cameras and locations. Missing Pune data, unknown plant identities and collection differences mean this score must not be treated as universal leaf-health accuracy.</p><details><summary>Read all experiment limitations</summary><ul>{% for limitation in r.limitations %}<li>{{ limitation }}</li>{% endfor %}</ul></details></div></section>
+  <section class="downloads wrap"><div><strong>Follow the evidence.</strong><span>Keep the notebook and measured results for your report.</span></div><a href="/download/report">Results JSON ↓</a><a href="/download/comparison">Comparison CSV ↓</a><a href="/download/splits">Split manifest ↓</a></section>
+</main>
+<footer class="wrap"><a class="brand" href="#top"><span class="brand-icon">{{ leaf() }}</span>Basil<span class="brand-light">Lab</span></a><p>Trained {{ r.trained_at[:10] }} · Dataset {{ r.dataset_fingerprint[:12] }}<br>Research prototype · Runs on your computer</p><a href="#checker">Back to leaf checker ↑</a></footer>
+</body></html>

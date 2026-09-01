@@ -1,0 +1,41 @@
+{
+  "partial_dataset": true,
+  "expected_images": 1131,
+  "downloaded_images": 898,
+  "missing_images": 233,
+  "folders": [
+    {
+      "folder": "Amravati_Region_Basil_Plant_Healthy",
+      "class": "Healthy",
+      "expected": 31,
+      "downloaded": 31,
+      "missing": 0,
+      "complete": true
+    },
+    {
+      "folder": "Nagpur_Region_Basil_Plant_Healthy",
+      "class": "Healthy",
+      "expected": 473,
+      "downloaded": 428,
+      "missing": 45,
+      "complete": false
+    },
+    {
+      "folder": "Pune_Region_Basil_Plant_Healthy",
+      "class": "Healthy",
+      "expected": 146,
+      "downloaded": 0,
+      "missing": 146,
+      "complete": false
+    },
+    {
+      "folder": "Basil_Plant_Unhealthy",
+      "class": "Unhealthy",
+      "expected": 481,
+      "downloaded": 439,
+      "missing": 42,
+      "complete": false
+    }
+  ],
+  "caveat": "Rate-limited partial download; absent regions and non-random missingness limit interpretation."
+}
