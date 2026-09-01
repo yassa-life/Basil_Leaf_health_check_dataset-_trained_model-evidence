@@ -1,0 +1,13 @@
+{
+  "decoded": 898,
+  "unique": 897,
+  "duplicates_removed": 1,
+  "rejected": [],
+  "groups": 759,
+  "development": 717,
+  "test": 180,
+  "class_counts": {
+    "Healthy": 458,
+    "Unhealthy": 439
+  }
+}

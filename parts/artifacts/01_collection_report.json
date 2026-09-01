@@ -1,0 +1,10 @@
+{
+  "source": "IEEE DataPort",
+  "doi": "10.21227/a4f6-4413",
+  "source_url": "https://ieee-dataport.org/open-access/leaves-indias-most-famous-basil-plant-leaves-quality-dataset",
+  "expected": 1131,
+  "downloaded": 898,
+  "missing": 233,
+  "partial_dataset": true,
+  "label_rule": "Only explicitly labelled Healthy and Unhealthy folders are used."
+}

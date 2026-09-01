@@ -1,0 +1,105 @@
+{
+  "pipeline_parts": 6,
+  "dataset": {
+    "source": "IEEE DataPort",
+    "doi": "10.21227/a4f6-4413",
+    "source_url": "https://ieee-dataport.org/open-access/leaves-indias-most-famous-basil-plant-leaves-quality-dataset",
+    "expected": 1131,
+    "downloaded": 898,
+    "missing": 233,
+    "partial_dataset": true,
+    "label_rule": "Only explicitly labelled Healthy and Unhealthy folders are used."
+  },
+  "preprocessing": {
+    "decoded": 898,
+    "unique": 897,
+    "duplicates_removed": 1,
+    "rejected": [],
+    "groups": 759,
+    "development": 717,
+    "test": 180,
+    "class_counts": {
+      "Healthy": 458,
+      "Unhealthy": 439
+    }
+  },
+  "features": {
+    "images": 897,
+    "feature_count": 1882,
+    "colour_features": 108,
+    "texture_features": 10,
+    "hog_features": 1764,
+    "version": "rgb-hsv-lbp-hog-v1",
+    "whole_image_caveat": "Background and lighting are included because leaves are not segmented."
+  },
+  "selection": {
+    "selected_model": "Random forest",
+    "selection_metric": "mean grouped 3-fold macro-F1",
+    "validation_macro_f1": 0.9636475644200724,
+    "rule": "Highest mean macro-F1; test set excluded."
+  },
+  "evaluation": {
+    "accuracy": 0.9555555555555556,
+    "balanced_accuracy": 0.9545454545454546,
+    "macro_f1": 0.9553571428571428,
+    "development_images": 717,
+    "test_images": 180,
+    "classes": [
+      "Healthy",
+      "Unhealthy"
+    ],
+    "confusion_matrix": [
+      [
+        92,
+        0
+      ],
+      [
+        8,
+        80
+      ]
+    ],
+    "classification_report": {
+      "Healthy": {
+        "precision": 0.92,
+        "recall": 1.0,
+        "f1-score": 0.9583333333333334,
+        "support": 92.0
+      },
+      "Unhealthy": {
+        "precision": 1.0,
+        "recall": 0.9090909090909091,
+        "f1-score": 0.9523809523809523,
+        "support": 88.0
+      },
+      "accuracy": 0.9555555555555556,
+      "macro avg": {
+        "precision": 0.96,
+        "recall": 0.9545454545454546,
+        "f1-score": 0.9553571428571428,
+        "support": 180.0
+      },
+      "weighted avg": {
+        "precision": 0.959111111111111,
+        "recall": 0.9555555555555556,
+        "f1-score": 0.9554232804232805,
+        "support": 180.0
+      }
+    },
+    "macro_f1_group_bootstrap_95_interval": [
+      0.9220655008138102,
+      0.9832552925047623
+    ]
+  },
+  "deployment": {
+    "interface": "Flask website at http://127.0.0.1:8000",
+    "prediction_flow": "upload -> safe RGB decode -> 1,882 features -> saved Random forest -> label",
+    "retraining": "Upload does not retrain. Run Persons 1\u20135 after adding data, then restart the website."
+  },
+  "limitations": [
+    "Partial IEEE download; missing sources are unrepresented.",
+    "Whole-image features can learn background, camera or lighting.",
+    "No independent new-farm/new-plant validation.",
+    "Prediction is not disease diagnosis or food-safety advice.",
+    "No calibrated confidence or unrelated-object rejection."
+  ]
+}

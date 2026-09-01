@@ -1,0 +1,6 @@
+{
+  "selected_model": "Random forest",
+  "selection_metric": "mean grouped 3-fold macro-F1",
+  "validation_macro_f1": 0.9636475644200724,
+  "rule": "Highest mean macro-F1; test set excluded."
+}

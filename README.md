@@ -43,6 +43,15 @@ The best performing model selected by cross-validation is a **Random Forest Clas
 ```
 ├── app.py                         # Flask web application & API backend
 ├── Basil_Leaf_ML_Workflow.ipynb   # Complete ML training & data audit notebook
+├── parts/                          # Six-person sequential notebook assignment
+│   ├── README.md                   # Responsibilities, order, and handoff rules
+│   ├── person_1_data_collection.ipynb
+│   ├── person_2_data_preprocessing.ipynb
+│   ├── person_3_feature_engineering.ipynb
+│   ├── person_4_model_selection.ipynb
+│   ├── person_5_training_evaluation.ipynb
+│   ├── person_6_deployment_reporting.ipynb
+│   └── artifacts/                  # Outputs passed between the six notebooks
 ├── start_web.bat                  # One-click Windows launch script
 ├── .gitignore                     # Git ignore rules
 ├── templates/
