@@ -10,7 +10,7 @@
   ],
   "precision": 0.96,
   "recall": 0.9545454545454546,
-  "fit_time_seconds": 1.516822800040245,
+  "fit_time_seconds": 1.6231367000145838,
   "confusion_matrix": [
     [
       92,

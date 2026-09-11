@@ -6,7 +6,7 @@
   "macro_f1": 0.94996138996139,
   "precision": 0.9501297738227661,
   "recall": 0.9498517786561265,
-  "fit_time_seconds": 0.024354900000616908,
+  "fit_time_seconds": 0.020528599969111383,
   "confusion_matrix": [
     [
       88,
