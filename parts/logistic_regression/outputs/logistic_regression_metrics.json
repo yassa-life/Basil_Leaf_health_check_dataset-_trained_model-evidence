@@ -1,0 +1,23 @@
+{
+  "model_name": "Logistic Regression",
+  "pipeline_stage": "Data Collection & Inventory",
+  "accuracy": 0.9222222222222223,
+  "macro_f1": 0.9222126188418324,
+  "precision": 0.9222222222222223,
+  "recall": 0.9224308300395256,
+  "fit_time_seconds": 0.26917879993561655,
+  "confusion_matrix": [
+    [
+      84,
+      8
+    ],
+    [
+      6,
+      82
+    ]
+  ],
+  "classes": [
+    "Healthy",
+    "Unhealthy"
+  ]
+}

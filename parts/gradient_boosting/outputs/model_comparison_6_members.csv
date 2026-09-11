@@ -1,0 +1,7 @@
+Model,Stage,Accuracy,Macro_F1,Fit_Time_s
+Logistic Regression,Data Collection & Inventory,0.9222,0.9222,0.269
+SVM (rbf kernel),Data Preprocessing & Split,0.95,0.95,0.555
+K-Nearest Neighbors (k=1),Feature Engineering,0.95,0.95,0.024
+Decision Tree (max_depth=7),Model Selection & Cross Validation,0.9611,0.961,0.689
+Random Forest (Pipeline Winner),Final Fit & Held-Out Evaluation,0.9556,0.9554,1.517
+Gradient Boosting,Deployment & Benchmark Reporting,0.9778,0.9777,32.949

@@ -1,0 +1,36 @@
+{
+  "model_name": "Decision Tree (max_depth=7)",
+  "pipeline_stage": "Model Selection & Cross Validation",
+  "max_depth": 7,
+  "accuracy": 0.9611111111111111,
+  "macro_f1": 0.9609653334985595,
+  "precision": 0.9646464646464646,
+  "recall": 0.9602272727272727,
+  "fit_time_seconds": 0.6888512000441551,
+  "confusion_matrix": [
+    [
+      92,
+      0
+    ],
+    [
+      7,
+      81
+    ]
+  ],
+  "top_10_features": [
+    59,
+    55,
+    69,
+    14,
+    70,
+    90,
+    84,
+    95,
+    111,
+    74
+  ],
+  "classes": [
+    "Healthy",
+    "Unhealthy"
+  ]
+}

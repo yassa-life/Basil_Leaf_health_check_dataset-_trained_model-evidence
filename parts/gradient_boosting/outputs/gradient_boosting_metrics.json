@@ -1,0 +1,23 @@
+{
+  "model_name": "Gradient Boosting",
+  "pipeline_stage": "Deployment & Benchmark Reporting",
+  "accuracy": 0.9777777777777777,
+  "macro_f1": 0.9777337951509153,
+  "precision": 0.9791666666666667,
+  "recall": 0.9772727272727273,
+  "fit_time_seconds": 32.94890710001346,
+  "confusion_matrix": [
+    [
+      92,
+      0
+    ],
+    [
+      4,
+      84
+    ]
+  ],
+  "classes": [
+    "Healthy",
+    "Unhealthy"
+  ]
+}

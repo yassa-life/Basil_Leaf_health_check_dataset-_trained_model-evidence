@@ -41,13 +41,20 @@
     <div class="section-heading"><div><p class="eyebrow">01 / THE LEAF CHECKER</p><h2>Meet your leaf.</h2></div><p>Use a clear basil leaf photo. Your image is processed<br class="desktop"> on this computer and is never saved or used for training.</p></div>
     <div class="checker-grid">
       <div class="upload-card">
-        <div class="card-top"><h3>Upload a leaf photo</h3><span class="tag">LOCAL & PRIVATE</span></div>
+        <div class="card-top"><h3>Add a leaf photo</h3><span class="tag">LOCAL & PRIVATE</span></div>
         <label class="drop-zone" id="drop-zone" for="image-input">
           <input id="image-input" type="file" accept="image/jpeg,image/png,image/webp,image/bmp,image/tiff" aria-label="Choose a basil leaf photo">
           <span class="upload-icon">{{ leaf() }}<b aria-hidden="true">+</b></span>
           <strong>Drop your leaf photo here</strong><span>or <u>browse files</u> on your computer</span>
           <small>JPG, PNG, WebP, BMP or TIFF · up to 12 MB</small>
         </label>
+        <input class="camera-input" id="camera-input" type="file" accept="image/*" capture="environment" aria-label="Take a basil leaf photo with the camera">
+        <div class="input-divider"><span>or add an image another way</span></div>
+        <div class="image-input-actions" aria-label="Additional image input options">
+          <button type="button" class="input-action" id="paste-image"><span aria-hidden="true">▣</span><strong>Paste image</strong><small>Clipboard or Ctrl+V</small></button>
+          <button type="button" class="input-action" id="take-photo"><span aria-hidden="true">◎</span><strong>Take photo</strong><small>Uses your device camera</small></button>
+        </div>
+        <p class="input-help" id="input-help" role="status">Choose one clear basil leaf photo. A new selection replaces the current preview.</p>
         <div id="preview-wrap" class="preview-wrap" hidden><img id="preview" alt="Selected leaf photo"><div><strong id="file-name"></strong><small id="file-detail"></small></div><button class="icon-button" id="remove-image" aria-label="Remove selected photo">×</button></div>
         <button id="analyze" class="button primary analyze" disabled>Analyze leaf <span aria-hidden="true">↗</span></button>
         <p class="error" id="upload-error" role="alert" hidden></p>

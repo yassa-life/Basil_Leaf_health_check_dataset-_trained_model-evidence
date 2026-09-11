@@ -167,5 +167,5 @@ def too_large(error):
 
 if __name__ == "__main__":
     from waitress import serve
-    print("Basil Lab is ready at http://127.0.0.1:8000", flush=True)
-    serve(app, host="127.0.0.1", port=8000, threads=4)
+    print("Basil Lab is ready at http://127.0.0.1:8001", flush=True)
+    serve(app, host="127.0.0.1", port=8001, threads=4)

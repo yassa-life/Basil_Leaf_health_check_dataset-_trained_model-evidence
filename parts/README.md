@@ -1,25 +1,25 @@
-# Six-person notebook assignment
+# Six-Person Model & Pipeline Assignment
 
-Run the notebooks in numerical order. The complete integrated notebook remains at `../Basil_Leaf_ML_Workflow.ipynb`; these files divide ownership without deleting it.
+Each of the six group members is assigned **one machine learning model** to train and evaluate end-to-end, while also owning **one stage of the shared ML data pipeline**.
 
-| Person | Notebook | Pipeline responsibility | Main handoff |
-|---|---|---|---|
-| Person 1 | `person_1_data_collection.ipynb` | Source, labels, local download inventory, missing coverage | Inventory and collection report |
-| Person 2 | `person_2_data_preprocessing.ipynb` | Decode, orientation, validation, duplicate audit, similarity groups, train/test split | Clean and split manifests |
-| Person 3 | `person_3_feature_engineering.ipynb` | RGB/HSV, LBP and HOG feature implementation and extraction | 1,882-feature matrix |
-| Person 4 | `person_4_model_selection.ipynb` | Grouped 3-fold comparison, macro-F1 selection, comparison table | Winner and validation evidence |
-| Person 5 | `person_5_training_evaluation.ipynb` | Final fit, held-out evaluation, bootstrap interval, error predictions | Saved model and test metrics |
-| Person 6 | `person_6_deployment_reporting.ipynb` | Matching inference, deployment verification, final report and limitations | Deployment-ready report |
+The complete integrated baseline notebook remains at `../Basil_Leaf_ML_Workflow.ipynb`.
 
-## Equal-work rule
+## 📁 Model Directories & Notebook Structure
 
-Each person owns four comparable deliverables: implementation, explanation, validation evidence, and a documented handoff. Model computation differs by stage, so equality is based on responsibility rather than identical line counts. Every person must explain their decisions and verify their output before handing it forward.
+Every team member has a dedicated folder containing their Python notebook (named in `(modelname_which pipeline stage)` format) and their model's output directory (`outputs/`):
 
-## Shared rules
+| Member | Folder | Notebook File `(modelname_which pipeline stage)` | Assigned ML Model | Pipeline Stage Responsibility | Primary Output Artifacts |
+|---|---|---|---|---|---|
+| **Person 1** | `parts/logistic_regression/` | [`logistic_regression_data_collection.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/logistic_regression/logistic_regression_data_collection.ipynb) | **Logistic Regression** | Data Collection & Inventory Audit | `logistic_regression_model.joblib`<br>`logistic_regression_metrics.json` |
+| **Person 2** | `parts/svm/` | [`svm_data_preprocessing.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/svm/svm_data_preprocessing.ipynb) | **Support Vector Machine (SVM)** | Data Preprocessing & Leakage-Safe Split | `svm_model.joblib`<br>`svm_metrics.json` |
+| **Person 3** | `parts/knn/` | [`knn_feature_engineering.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/knn/knn_feature_engineering.ipynb) | **K-Nearest Neighbors (KNN)** | Feature Engineering (RGB/HSV/LBP/HOG) | `knn_model.joblib`<br>`knn_metrics.json` |
+| **Person 4** | `parts/decision_tree/` | [`decision_tree_model_selection.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/decision_tree/decision_tree_model_selection.ipynb) | **Decision Tree Classifier** | Cross-Validation & Model Selection | `decision_tree_model.joblib`<br>`decision_tree_metrics.json` |
+| **Person 5** | `parts/random_forest/` | [`random_forest_training_evaluation.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/random_forest/random_forest_training_evaluation.ipynb) | **Random Forest (Selected Winner)** | Model Fitting & Bootstrap 95% CI Evaluation | `random_forest_model.joblib`<br>`random_forest_metrics.json` |
+| **Person 6** | `parts/gradient_boosting/` | [`gradient_boosting_deployment_reporting.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/gradient_boosting/gradient_boosting_deployment_reporting.ipynb) | **Gradient Boosting Classifier** | Web App Deployment & Benchmarking Report | `gradient_boosting_model.joblib`<br>`gradient_boosting_metrics.json`<br>`model_comparison_6_members.csv` |
 
-- Use the existing project `.venv` kernel.
-- Do not change the fixed test set after Person 2 creates it.
-- Do not use the test score to select a model.
-- Do not edit another person's artifact silently; rerun from the changed stage onward.
-- Files made by these notebooks stay in `parts/artifacts/` so they do not overwrite the integrated workflow.
-- The dataset remains a partial download until all listed folders and files are present.
+## 📐 Shared Guidelines & Rules
+
+- **Shared Virtual Environment:** Use the existing project kernel (`.venv`).
+- **Shared Data & Features:** All notebooks read the clean dataset manifest (`parts/artifacts/02_clean_manifest.csv`) and extracted feature matrix (`parts/artifacts/03_features.npz`).
+- **Fixed Holdout Test Set:** Do not alter the fixed test set (180 holdout images).
+- **Independent Model Evaluation:** Each member evaluates their assigned model and saves metrics (`Accuracy`, `Macro F1`, `Precision`, `Recall`, `Confusion Matrix`) to their folder's `outputs/` directory.

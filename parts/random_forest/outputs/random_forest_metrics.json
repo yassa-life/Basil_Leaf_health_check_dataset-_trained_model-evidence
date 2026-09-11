@@ -1,0 +1,50 @@
+{
+  "model_name": "Random Forest (Pipeline Winner)",
+  "pipeline_stage": "Final Fit & Held-Out Evaluation",
+  "n_estimators": 200,
+  "accuracy": 0.9555555555555556,
+  "macro_f1": 0.9553571428571428,
+  "bootstrap_95_ci": [
+    0.9215986324726163,
+    0.9832175122200254
+  ],
+  "precision": 0.96,
+  "recall": 0.9545454545454546,
+  "fit_time_seconds": 1.516822800040245,
+  "confusion_matrix": [
+    [
+      92,
+      0
+    ],
+    [
+      8,
+      80
+    ]
+  ],
+  "top_20_features": [
+    60,
+    69,
+    59,
+    40,
+    39,
+    20,
+    107,
+    61,
+    104,
+    89,
+    90,
+    38,
+    41,
+    68,
+    73,
+    19,
+    18,
+    46,
+    105,
+    49
+  ],
+  "classes": [
+    "Healthy",
+    "Unhealthy"
+  ]
+}

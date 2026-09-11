@@ -1,0 +1,28 @@
+{
+  "model_name": "SVM (rbf kernel)",
+  "pipeline_stage": "Data Preprocessing & Split",
+  "kernel": "rbf",
+  "support_vectors_per_class": [
+    290,
+    280
+  ],
+  "accuracy": 0.95,
+  "macro_f1": 0.94996138996139,
+  "precision": 0.9501297738227661,
+  "recall": 0.9498517786561265,
+  "fit_time_seconds": 0.5554791999747977,
+  "confusion_matrix": [
+    [
+      88,
+      4
+    ],
+    [
+      5,
+      83
+    ]
+  ],
+  "classes": [
+    "Healthy",
+    "Unhealthy"
+  ]
+}
