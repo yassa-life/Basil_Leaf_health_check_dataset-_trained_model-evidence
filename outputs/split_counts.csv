@@ -1,4 +1,4 @@
 label,All unique images,Development / final training,Untouched test
-Healthy,458,366,92
-Unhealthy,439,351,88
-TOTAL,897,717,180
+Healthy,643,514,129
+Unhealthy,481,385,96
+TOTAL,1124,899,225

@@ -7,3 +7,12 @@ outputs/*.log
 .DS_Store
 .vscode/
 .idea/
+
+# Assigned image dataset — keep local; do not push or zip-upload binaries
+data/raw/
+**/data/raw/
+
+# Assigned image dataset — keep local; do not push or zip-upload binaries
+data/raw/
+**/data/raw/
+

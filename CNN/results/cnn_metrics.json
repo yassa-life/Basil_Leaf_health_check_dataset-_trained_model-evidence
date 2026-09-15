@@ -1,0 +1,54 @@
+{
+  "model_name": "BasilLeafCNN",
+  "method": "CNN",
+  "pipeline_stage": "Deep Learning Image Classification",
+  "feature_version": "cnn-rgb-128-v1",
+  "img_size": 128,
+  "epochs": 20,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "optimizer": "Adam",
+  "best_val_macro_f1": 0.989769820971867,
+  "accuracy": 0.9866666666666667,
+  "macro_f1": 0.986355091067133,
+  "precision": 0.9870445344129555,
+  "recall": 0.9857073643410852,
+  "test_loss": 0.04887925909625008,
+  "bootstrap_95_ci": [
+    0.9685885802038252,
+    1.0
+  ],
+  "fit_time_seconds": 669.4408142999746,
+  "confusion_matrix": [
+    [
+      128,
+      1
+    ],
+    [
+      2,
+      94
+    ]
+  ],
+  "n_train": 599,
+  "n_val": 300,
+  "n_test": 225,
+  "classes": [
+    "Healthy",
+    "Unhealthy"
+  ],
+  "class_weights": {
+    "Healthy": 0.8580968976020813,
+    "Unhealthy": 1.141903281211853
+  },
+  "audit_summary": {
+    "valid_unique_count": 1124,
+    "class_counts": {
+      "Healthy": 643,
+      "Unhealthy": 481
+    },
+    "split_groups": 981
+  },
+  "created_utc": "2026-09-15T07:21:34.882021+00:00",
+  "torch_version": "2.14.0+cpu",
+  "device": "cpu"
+}

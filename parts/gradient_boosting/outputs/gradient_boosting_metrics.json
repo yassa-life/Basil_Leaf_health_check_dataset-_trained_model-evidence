@@ -1,24 +1,27 @@
 {
   "model_name": "Gradient Boosting",
   "pipeline_stage": "Deployment & Benchmark Reporting",
-  "accuracy": 0.9722222222222222,
-  "macro_f1": 0.9721526037315511,
-  "precision": 0.9742268041237113,
-  "recall": 0.9715909090909092,
-  "fit_time_seconds": 52.01784560002852,
-  "latency_ms_per_sample": 0.032268499955534935,
+  "accuracy": 0.9822222222222222,
+  "macro_f1": 0.9817813765182186,
+  "precision": 0.9832304693844405,
+  "recall": 0.9804990310077519,
+  "fit_time_seconds": 67.47205570002552,
+  "latency_ms_per_sample": 0.024540300015360117,
   "confusion_matrix": [
     [
-      92,
-      0
+      128,
+      1
     ],
     [
-      5,
-      83
+      3,
+      93
     ]
   ],
+  "n_train": 899,
+  "n_test": 225,
   "classes": [
     "Healthy",
     "Unhealthy"
-  ]
+  ],
+  "feature_version": "rgb-hsv-lbp-hog-v1"
 }

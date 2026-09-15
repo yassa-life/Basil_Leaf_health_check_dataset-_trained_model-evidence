@@ -1,9 +1,0 @@
-{
-  "images": 897,
-  "feature_count": 1882,
-  "colour_features": 108,
-  "texture_features": 10,
-  "hog_features": 1764,
-  "version": "rgb-hsv-lbp-hog-v1",
-  "whole_image_caveat": "Background and lighting are included because leaves are not segmented."
-}

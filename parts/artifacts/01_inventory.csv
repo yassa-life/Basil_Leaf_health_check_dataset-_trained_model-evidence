@@ -1,5 +1,0 @@
-folder,label,expected,downloaded,missing,coverage_percent
-Amravati_Region_Basil_Plant_Healthy,Healthy,31,31,0,100.0
-Nagpur_Region_Basil_Plant_Healthy,Healthy,473,428,45,90.49
-Pune_Region_Basil_Plant_Healthy,Healthy,146,0,146,0.0
-Basil_Plant_Unhealthy,Unhealthy,481,439,42,91.27

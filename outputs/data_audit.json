@@ -1,21 +1,20 @@
 {
   "source": "https://ieee-dataport.org/open-access/leaves-indias-most-famous-basil-plant-leaves-quality-dataset",
   "doi": "10.21227/a4f6-4413",
-  "input_count": 898,
-  "valid_unique_count": 897,
-  "exact_duplicates_removed": 1,
+  "input_count": 1131,
+  "valid_unique_count": 1124,
+  "exact_duplicates_removed": 7,
   "rejected_images": [],
   "class_counts": {
-    "Healthy": 458,
-    "Unhealthy": 439
+    "Healthy": 643,
+    "Unhealthy": 481
   },
-  "split_groups": 759,
-  "grouping_caveat": "Perceptual hashes are a heuristic, not proof of independent plants. Provide capture/plant/session group IDs where available. Review near-duplicate groups before interpreting results.",
+  "split_groups": 981,
   "download_coverage": {
-    "partial_dataset": true,
+    "partial_dataset": false,
     "expected_images": 1131,
-    "downloaded_images": 898,
-    "missing_images": 233,
+    "downloaded_images": 1131,
+    "missing_images": 0,
     "folders": [
       {
         "folder": "Amravati_Region_Basil_Plant_Healthy",
@@ -29,27 +28,26 @@
         "folder": "Nagpur_Region_Basil_Plant_Healthy",
         "class": "Healthy",
         "expected": 473,
-        "downloaded": 428,
-        "missing": 45,
-        "complete": false
+        "downloaded": 473,
+        "missing": 0,
+        "complete": true
       },
       {
         "folder": "Pune_Region_Basil_Plant_Healthy",
         "class": "Healthy",
         "expected": 146,
-        "downloaded": 0,
-        "missing": 146,
-        "complete": false
+        "downloaded": 146,
+        "missing": 0,
+        "complete": true
       },
       {
         "folder": "Basil_Plant_Unhealthy",
         "class": "Unhealthy",
         "expected": 481,
-        "downloaded": 439,
-        "missing": 42,
-        "complete": false
+        "downloaded": 481,
+        "missing": 0,
+        "complete": true
       }
-    ],
-    "caveat": "Rate-limited partial download; absent regions and non-random missingness limit interpretation."
+    ]
   }
 }

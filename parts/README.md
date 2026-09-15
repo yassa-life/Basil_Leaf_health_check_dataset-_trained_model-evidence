@@ -1,23 +1,27 @@
-# Six-Person Model & Pipeline Assignment
+# Six-Person Model Assignment
 
-Each of the six group members is assigned **one machine learning model** to train and evaluate end-to-end, while also owning **one stage of the shared ML data pipeline**.
+Each of the six group members trains **one machine learning model** end-to-end on the shared labelled dataset under `data/raw/`, and owns one stage of the pipeline narrative.
 
-## 📁 Model Directories & Notebook Structure
+## Model directories
 
-Every team member has a dedicated folder containing their Python notebook (named in `(modelname_which pipeline stage)` format) and their model's output directory (`outputs/`):
+Every member folder has a notebook and an `outputs/` directory for that model only. There is **no shared `parts/artifacts/` folder** — each notebook loads images from `data/raw`, extracts RGB/HSV/LBP/HOG features, trains its model, and writes metrics/models into its own `outputs/`.
 
-| Member | Folder | Notebook File `(modelname_which pipeline stage)` | Assigned ML Model | Pipeline Stage Responsibility | Primary Output Artifacts |
+| Member | Folder | Notebook | Assigned ML Model | Pipeline Stage | Primary Outputs |
 |---|---|---|---|---|---|
-| **Person 1** | `parts/logistic_regression/` | [`logistic_regression_data_collection.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/logistic_regression/logistic_regression_data_collection.ipynb) | **Logistic Regression** | Data Collection & Inventory Audit | `outputs/logistic_regression_model.joblib`<br>`outputs/logistic_regression_metrics.json` |
-| **Person 2** | `parts/svm/` | [`svm_data_preprocessing.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/svm/svm_data_preprocessing.ipynb) | **Support Vector Machine (SVM)** | Data Preprocessing & Leakage-Safe Split | `outputs/svm_model.joblib`<br>`outputs/svm_metrics.json` |
-| **Person 3** | `parts/knn/` | [`knn_feature_engineering.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/knn/knn_feature_engineering.ipynb) | **K-Nearest Neighbors (KNN)** | Feature Engineering (RGB/HSV/LBP/HOG) | `outputs/knn_model.joblib`<br>`outputs/knn_metrics.json` |
-| **Person 4** | `parts/decision_tree/` | [`decision_tree_model_selection.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/decision_tree/decision_tree_model_selection.ipynb) | **Decision Tree Classifier** | Cross-Validation & Model Selection | `outputs/decision_tree_model.joblib`<br>`outputs/decision_tree_metrics.json` |
-| **Person 5** | `parts/random_forest/` | [`random_forest_training_evaluation.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/random_forest/random_forest_training_evaluation.ipynb) | **Random Forest (Selected Winner)** | Model Fitting & Bootstrap 95% CI Evaluation | `outputs/random_forest_model.joblib`<br>`outputs/random_forest_metrics.json` |
-| **Person 6** | `parts/gradient_boosting/` | [`gradient_boosting_deployment_reporting.ipynb`](file:///d:/SLIIT/projectr/Dataset_Train/parts/gradient_boosting/gradient_boosting_deployment_reporting.ipynb) | **Gradient Boosting Classifier** | Web App Deployment & Benchmarking Report | `outputs/gradient_boosting_model.joblib`<br>`outputs/gradient_boosting_metrics.json`<br>`outputs/model_comparison_6_members.csv` |
+| Person 1 | `parts/logistic_regression/` | `logistic_regression_data_collection.ipynb` | Logistic Regression | Data Collection & Inventory | `outputs/logistic_regression_model.joblib`, `outputs/logistic_regression_metrics.json` |
+| Person 2 | `parts/svm/` | `svm_data_preprocessing.ipynb` | SVM | Data Preprocessing & Split | `outputs/svm_model.joblib`, `outputs/svm_metrics.json` |
+| Person 3 | `parts/knn/` | `knn_feature_engineering.ipynb` | KNN | Feature Engineering | `outputs/knn_model.joblib`, `outputs/knn_metrics.json` |
+| Person 4 | `parts/decision_tree/` | `decision_tree_model_selection.ipynb` | Decision Tree | Model Selection | `outputs/decision_tree_model.joblib`, `outputs/decision_tree_metrics.json` |
+| Person 5 | `parts/random_forest/` | `random_forest_training_evaluation.ipynb` | Random Forest | Training & Evaluation | `outputs/random_forest_model.joblib`, `outputs/random_forest_metrics.json` |
+| Person 6 | `parts/gradient_boosting/` | `gradient_boosting_deployment_reporting.ipynb` | Gradient Boosting | Deployment Reporting | `outputs/gradient_boosting_model.joblib`, `outputs/gradient_boosting_metrics.json`, `outputs/model_comparison_6_members.csv` |
 
-## 📐 Shared Guidelines & Rules
+Shared helper: `parts/_pipeline.py` (dataset discovery, audit, split, handcrafted features).
 
-- **Shared Virtual Environment:** Use the existing project kernel (`.venv`).
-- **Shared Data & Features:** All notebooks read the clean dataset manifest (`parts/artifacts/02_clean_manifest.csv`) and extracted feature matrix (`parts/artifacts/03_features.npz`).
-- **Fixed Holdout Test Set:** Do not alter the fixed test set (180 holdout images).
-- **Independent Model Evaluation:** Each member evaluates their assigned model and saves metrics (`Accuracy`, `Macro F1`, `Precision`, `Recall`, `Confusion Matrix`) to their folder's `outputs/` directory.
+A seventh **CNN** model lives outside `parts/` at `CNN/` (pixel CNN instead of handcrafted features). Notebook, model weights, analytics, and holdout results are kept under `CNN/outputs/`, `CNN/analytics/`, and `CNN/results/`.
+
+## Rules
+
+- Use the project `.venv` kernel.
+- Only the four labelled folders under `data/raw/` are used (`*_Healthy` + `Basil_Plant_Unhealthy`). Legacy short folders (`Amravati`, `Nagpur`, `Pune`, `Bad`) are ignored.
+- Each notebook writes only to its own `outputs/` folder.
+- The production Flask app still loads the selected model from the root `outputs/model.joblib` produced by `Basil_Leaf_ML_Workflow.ipynb`.

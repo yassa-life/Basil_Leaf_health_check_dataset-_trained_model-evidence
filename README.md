@@ -18,23 +18,22 @@ This project provides a complete Machine Learning workflow and an interactive lo
 
 ### Dataset Information
 - **Source**: [IEEE DataPort - Leaves - India's Most Famous Basil Plant Leaves Quality Dataset](https://ieee-dataport.org/open-access/leaves-indias-most-famous-basil-plant-leaves-quality-dataset) (DOI: `10.21227/a4f6-4413`)
-- **Classes**: `Healthy` (458 samples) & `Unhealthy` (439 samples)
-- **Total Valid Unique Images**: 897 images across 759 perceptual groups.
+- **Classes**: `Healthy` (643 unique) & `Unhealthy` (481 unique) after audit/dedupe
+- **Listed images**: 1,131 in the four labelled folders; **1,124 unique** after removing 7 exact duplicates
+- Legacy short folders (`Amravati`, `Nagpur`, `Pune`, `Bad`) are ignored for labelling
 
 ### Model Evaluation Highlights
-The best performing model selected by cross-validation is a **Random Forest Classifier**:
+The best classical model selected by grouped cross-validation is a **Random Forest Classifier** (98.22% holdout accuracy). A pixel **CNN** in `CNN/` reaches **98.67%** accuracy / **0.9864** macro F1 on the same holdout split.
 
-| Metric | Score |
-| :--- | :--- |
-| **Accuracy** | 95.56% |
-| **Balanced Accuracy** | 95.45% |
-| **Macro F1-Score** | 0.9554 |
-| **95% Bootstrap CI (Macro F1)** | [0.9221, 0.9833] |
-| **Inference Speed** | ~0.39 ms / image |
+| Metric | Random Forest | CNN |
+| :--- | ---: | ---: |
+| **Accuracy** | 98.22% | **98.67%** |
+| **Macro F1-Score** | 0.9817 | **0.9864** |
+| **95% Bootstrap CI (Macro F1)** | [0.9593, 0.9957] | [0.9686, 1.0000] |
+| **Holdout** | 225 test / 899 train | 225 test / 599 train / 300 val |
 
-#### Classification Report (Holdout Test Set - 180 Images)
-- **Healthy**: Precision `0.92` | Recall `1.00` | F1-Score `0.96` (92 samples)
-- **Unhealthy**: Precision `1.00` | Recall `0.91` | F1-Score `0.95` (88 samples)
+#### Classification Report (Holdout Test Set)
+See `outputs/results.json` for the latest classical-model per-class scores, and `CNN/results/RESULTS.md` for the CNN holdout report.
 
 ---
 
@@ -43,30 +42,26 @@ The best performing model selected by cross-validation is a **Random Forest Clas
 ```
 ├── app.py                         # Flask web application & API backend
 ├── Basil_Leaf_ML_Workflow.ipynb   # Complete ML training & data audit notebook
-├── parts/                          # Six-person sequential notebook assignment
-│   ├── README.md                   # Responsibilities, order, and handoff rules
-│   ├── person_1_data_collection.ipynb
-│   ├── person_2_data_preprocessing.ipynb
-│   ├── person_3_feature_engineering.ipynb
-│   ├── person_4_model_selection.ipynb
-│   ├── person_5_training_evaluation.ipynb
-│   ├── person_6_deployment_reporting.ipynb
-│   └── artifacts/                  # Outputs passed between the six notebooks
+├── CNN/                           # CNN deep-learning model (notebook + outputs/analytics/results)
+│   ├── CNN_Basil_Leaf_Training.ipynb
+│   ├── train_cnn.py
+│   ├── outputs/                   # cnn_model.pt
+│   ├── analytics/                 # curves, confusion matrix, history
+│   └── results/                   # metrics, predictions, comparison
+├── parts/                         # Six-person model notebooks (each with outputs/)
+│   ├── README.md
+│   ├── _pipeline.py               # Shared data/feature helpers
+│   ├── logistic_regression/
+│   ├── svm/
+│   ├── knn/
+│   ├── decision_tree/
+│   ├── random_forest/
+│   └── gradient_boosting/
 ├── start_web.bat                  # One-click Windows launch script
-├── .gitignore                     # Git ignore rules
-├── templates/
-│   └── index.html                 # Web dashboard UI
-├── static/
-│   ├── app.js                     # Frontend interaction logic
-│   └── style.css                  # UI styles
-├── outputs/
-│   ├── model.joblib               # Exported trained Random Forest pipeline
-│   ├── results.json               # Detailed metrics & metadata
-│   ├── dataset_manifest.csv       # Processed dataset file manifest
-│   ├── split_counts.csv           # Train/test split summary
-│   └── cv_fold_counts.csv         # Grouped CV fold metrics
-└── data/
-    └── raw/                       # Image dataset folders
+├── .gitignore
+├── templates/ / static/           # Web dashboard
+├── outputs/                       # Main notebook model + reports for the web app
+└── data/raw/                      # Labelled image folders
 ```
 
 ---
@@ -103,6 +98,13 @@ Install the required dependencies:
 ```bash
 pip install flask pillow joblib numpy scikit-image scikit-learn waitress
 ```
+
+To train the CNN model as well:
+```bash
+pip install torch --index-url https://download.pytorch.org/whl/cpu
+python CNN/train_cnn.py
+```
+Or open `CNN/CNN_Basil_Leaf_Training.ipynb`. Metrics and plots are written to `CNN/analytics/` and `CNN/results/`.
 
 ---
 

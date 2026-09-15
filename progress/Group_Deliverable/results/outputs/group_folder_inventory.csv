@@ -1,0 +1,5 @@
+folder,label,region,expected,found,missing_count,extra_count,complete
+Amravati_Region_Basil_Plant_Healthy,Healthy,Amravati,31,31,0,0,True
+Nagpur_Region_Basil_Plant_Healthy,Healthy,Nagpur,473,473,0,0,True
+Pune_Region_Basil_Plant_Healthy,Healthy,Pune,146,146,0,0,True
+Basil_Plant_Unhealthy,Unhealthy,Unknown,481,481,0,0,True

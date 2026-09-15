@@ -1,50 +1,53 @@
 {
-  "model_name": "Random Forest (Pipeline Winner)",
+  "model_name": "Random Forest",
   "pipeline_stage": "Final Fit & Held-Out Evaluation",
   "n_estimators": 200,
-  "accuracy": 0.9555555555555556,
-  "macro_f1": 0.9553571428571428,
+  "accuracy": 0.9822222222222222,
+  "macro_f1": 0.9817281143414001,
   "bootstrap_95_ci": [
-    0.9215986324726163,
-    0.9832175122200254
+    0.9633369459139801,
+    0.995495630322645
   ],
-  "precision": 0.96,
-  "recall": 0.9545454545454546,
-  "fit_time_seconds": 1.6231367000145838,
+  "precision": 0.9849624060150376,
+  "recall": 0.9791666666666667,
+  "fit_time_seconds": 1.654511799919419,
   "confusion_matrix": [
     [
-      92,
+      129,
       0
     ],
     [
-      8,
-      80
+      4,
+      92
     ]
   ],
   "top_20_features": [
     60,
-    69,
     59,
-    40,
-    39,
-    20,
-    107,
     61,
-    104,
+    69,
+    107,
     89,
+    84,
+    24,
+    104,
+    20,
+    101,
     90,
-    38,
-    41,
-    68,
+    40,
     73,
-    19,
-    18,
-    46,
-    105,
-    49
+    95,
+    21,
+    13,
+    68,
+    39,
+    94
   ],
+  "n_train": 899,
+  "n_test": 225,
   "classes": [
     "Healthy",
     "Unhealthy"
-  ]
+  ],
+  "feature_version": "rgb-hsv-lbp-hog-v1"
 }

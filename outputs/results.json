@@ -1,32 +1,31 @@
 {
   "status": "trained",
-  "trained_at": "2026-08-31T13:16:10.322389+00:00",
+  "trained_at": "2026-09-15T06:02:38.713554+00:00",
   "selected_model": "Random forest",
   "features": "handcrafted",
   "classes": [
     "Healthy",
     "Unhealthy"
   ],
-  "selection_reason": "Random forest had the highest mean grouped 3-fold development macro-F1 (0.9636). Macro-F1 weights each class equally. Exact score ties are broken by mean classifier fitting time, then model name. The holdout was excluded from selection. Close CV results are uncertain, not proof of superiority.",
-  "dataset_fingerprint": "ef58e07ea56c5c7c0b1e2dea875b4d76991fa120fb4650e348c2b7843f3e7e8b",
+  "selection_reason": "Random forest had the highest mean grouped 3-fold development macro-F1 (0.9633). Macro-F1 weights each class equally. Exact score ties are broken by mean classifier fitting time, then model name. The holdout was excluded from selection.",
+  "dataset_fingerprint": "45649c31a10fc7497fd7e5875b8adcf043ed607a184cb90742f06882bf040e1d",
   "data_audit": {
     "source": "https://ieee-dataport.org/open-access/leaves-indias-most-famous-basil-plant-leaves-quality-dataset",
     "doi": "10.21227/a4f6-4413",
-    "input_count": 898,
-    "valid_unique_count": 897,
-    "exact_duplicates_removed": 1,
+    "input_count": 1131,
+    "valid_unique_count": 1124,
+    "exact_duplicates_removed": 7,
     "rejected_images": [],
     "class_counts": {
-      "Healthy": 458,
-      "Unhealthy": 439
+      "Healthy": 643,
+      "Unhealthy": 481
     },
-    "split_groups": 759,
-    "grouping_caveat": "Perceptual hashes are a heuristic, not proof of independent plants. Provide capture/plant/session group IDs where available. Review near-duplicate groups before interpreting results.",
+    "split_groups": 981,
     "download_coverage": {
-      "partial_dataset": true,
+      "partial_dataset": false,
       "expected_images": 1131,
-      "downloaded_images": 898,
-      "missing_images": 233,
+      "downloaded_images": 1131,
+      "missing_images": 0,
       "folders": [
         {
           "folder": "Amravati_Region_Basil_Plant_Healthy",
@@ -40,77 +39,76 @@
           "folder": "Nagpur_Region_Basil_Plant_Healthy",
           "class": "Healthy",
           "expected": 473,
-          "downloaded": 428,
-          "missing": 45,
-          "complete": false
+          "downloaded": 473,
+          "missing": 0,
+          "complete": true
         },
         {
           "folder": "Pune_Region_Basil_Plant_Healthy",
           "class": "Healthy",
           "expected": 146,
-          "downloaded": 0,
-          "missing": 146,
-          "complete": false
+          "downloaded": 146,
+          "missing": 0,
+          "complete": true
         },
         {
           "folder": "Basil_Plant_Unhealthy",
           "class": "Unhealthy",
           "expected": 481,
-          "downloaded": 439,
-          "missing": 42,
-          "complete": false
+          "downloaded": 481,
+          "missing": 0,
+          "complete": true
         }
-      ],
-      "caveat": "Rate-limited partial download; absent regions and non-random missingness limit interpretation."
+      ]
     }
   },
-  "development_images": 717,
-  "test_images": 180,
+  "development_images": 899,
+  "test_images": 225,
   "metrics": {
-    "accuracy": 0.9555555555555556,
-    "balanced_accuracy": 0.9545454545454546,
-    "macro_f1": 0.9553571428571428,
+    "accuracy": 0.9822222222222222,
+    "balanced_accuracy": 0.9791666666666667,
+    "macro_f1": 0.9817281143414001,
     "macro_f1_group_bootstrap_95_interval": [
-      0.9220655008138102,
-      0.9832552925047623
+      0.9592960492042308,
+      0.995719480367341
     ],
-    "classifier_ms_per_image": 0.3857277776761394,
-    "test_images": 180,
+    "classifier_ms_per_image": 1.107391555690103,
+    "test_images": 225,
     "classification_report": {
       "Healthy": {
-        "precision": 0.92,
+        "precision": 0.9699248120300752,
         "recall": 1.0,
-        "f1-score": 0.9583333333333334,
-        "support": 92.0
+        "f1-score": 0.9847328244274809,
+        "support": 129.0
       },
       "Unhealthy": {
         "precision": 1.0,
-        "recall": 0.9090909090909091,
-        "f1-score": 0.9523809523809523,
-        "support": 88.0
+        "recall": 0.9583333333333334,
+        "f1-score": 0.9787234042553191,
+        "support": 96.0
       },
-      "accuracy": 0.9555555555555556,
+      "accuracy": 0.9822222222222222,
       "macro avg": {
-        "precision": 0.96,
-        "recall": 0.9545454545454546,
-        "f1-score": 0.9553571428571428,
-        "support": 180.0
+        "precision": 0.9849624060150376,
+        "recall": 0.9791666666666667,
+        "f1-score": 0.9817281143414001,
+        "support": 225.0
       },
       "weighted avg": {
-        "precision": 0.959111111111111,
-        "recall": 0.9555555555555556,
-        "f1-score": 0.9554232804232805,
-        "support": 180.0
+        "precision": 0.9827568922305765,
+        "recall": 0.9822222222222222,
+        "f1-score": 0.9821688051540253,
+        "support": 225.0
       }
     },
     "confusion_matrix": [
       [
-        92,
+        129,
         0
       ],
       [
-        8,
-        80
+        4,
+        92
       ]
     ],
     "classes": [
@@ -122,69 +120,66 @@
     {
       "model": "Random forest",
       "features": "handcrafted",
-      "cv_macro_f1": 0.9636475644200724,
-      "cv_std": 0.005248333428668769,
-      "cv_accuracy": 0.9637377963737795,
-      "mean_fit_seconds": 0.9610406666761264
+      "cv_macro_f1": 0.9633468513926826,
+      "cv_std": 0.007173547262889574,
+      "cv_accuracy": 0.9643961352657006,
+      "mean_fit_seconds": 1.2306892999913543
     },
     {
       "model": "RBF SVM C=10.0",
       "features": "handcrafted",
-      "cv_macro_f1": 0.95394278117658,
-      "cv_std": 0.01564969978583392,
-      "cv_accuracy": 0.9539748953974896,
-      "mean_fit_seconds": 0.2642642999999225
+      "cv_macro_f1": 0.9426266671400348,
+      "cv_std": 0.024552811793589324,
+      "cv_accuracy": 0.9444109996283908,
+      "mean_fit_seconds": 0.4005757333555569
     },
     {
       "model": "RBF SVM C=1.0",
       "features": "handcrafted",
-      "cv_macro_f1": 0.9385568691374404,
-      "cv_std": 0.016877330150110097,
-      "cv_accuracy": 0.9386331938633193,
-      "mean_fit_seconds": 0.27902950001104426
-    },
-    {
-      "model": "Logistic regression C=1.0",
-      "features": "handcrafted",
-      "cv_macro_f1": 0.9177098592995684,
-      "cv_std": 0.007111182045724124,
-      "cv_accuracy": 0.9177126917712691,
-      "mean_fit_seconds": 0.039402933325618505
+      "cv_macro_f1": 0.9393805052299458,
+      "cv_std": 0.013513079546266548,
+      "cv_accuracy": 0.9410590858416946,
+      "mean_fit_seconds": 0.38444723332456004
     },
     {
       "model": "Logistic regression C=0.1",
       "features": "handcrafted",
-      "cv_macro_f1": 0.9149183586387997,
-      "cv_std": 0.005218036399743264,
-      "cv_accuracy": 0.9149232914923292,
-      "mean_fit_seconds": 0.13597126666960926
+      "cv_macro_f1": 0.9181532591529185,
+      "cv_std": 0.017011229346340948,
+      "cv_accuracy": 0.9198996655518394,
+      "mean_fit_seconds": 0.11419196667460103
+    },
+    {
+      "model": "Logistic regression C=1.0",
+      "features": "handcrafted",
+      "cv_macro_f1": 0.9158946560838471,
+      "cv_std": 0.02334991715342583,
+      "cv_accuracy": 0.917670011148272,
+      "mean_fit_seconds": 0.058903333342944585
     },
     {
       "model": "5-nearest neighbors",
       "features": "handcrafted",
-      "cv_macro_f1": 0.8911938979562488,
-      "cv_std": 0.018063586392116224,
-      "cv_accuracy": 0.8912133891213389,
-      "mean_fit_seconds": 0.022130199989381556
+      "cv_macro_f1": 0.8867056450626966,
+      "cv_std": 0.043837331555444815,
+      "cv_accuracy": 0.8910107766629506,
+      "mean_fit_seconds": 0.025976699970973034
     },
     {
       "model": "Majority baseline",
       "features": "handcrafted",
-      "cv_macro_f1": 0.3379501385041552,
-      "cv_std": 5.551115123125783e-17,
-      "cv_accuracy": 0.5104602510460251,
-      "mean_fit_seconds": 0.0030626000079791993
+      "cv_macro_f1": 0.3637646305786079,
+      "cv_std": 0.0005528357925498471,
+      "cv_accuracy": 0.5717465626161279,
+      "mean_fit_seconds": 0.0023981333166981735
     }
   ],
   "limitations": [
     "Research prototype; not a disease diagnosis or food-safety test.",
-    "Labels come from the supplied dataset; listed diseases are not assumed to be labelled classes.",
     "Whole-image features may learn background, lighting or basil variety rather than health.",
     "No calibrated confidence or reliable non-leaf/out-of-distribution detector is provided.",
-    "No external-site or new-plant validation has been performed.",
-    "Bootstrap interval reflects this grouped holdout, not all sources of uncertainty.",
-    "Partial download: missing images and regions are not represented; results do not describe the complete IEEE dataset."
+    "No external-site or new-plant validation has been performed."
   ],
-  "dataset_scope": "partial",
+  "dataset_scope": "complete_listed_counts",
   "transfer_compared": false
 }
