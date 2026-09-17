@@ -203,3 +203,52 @@ def extract_feature_matrix(
     if not vectors:
         raise ValueError("Feature extraction produced no vectors.")
     return np.vstack(vectors), np.array(labels), pd.DataFrame(kept)
+
+
+def draw_process_flow(
+    steps: list[str],
+    title: str = "Process flow",
+    highlight: int | None = None,
+    figsize: tuple[float, float] | None = None,
+):
+    """Draw a left-to-right process flowchart (matplotlib FancyBbox)."""
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+
+    n = len(steps)
+    if figsize is None:
+        figsize = (max(10, 1.7 * n), 2.6)
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.set_xlim(0, n + 0.4)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
+    ax.set_title(title, fontsize=13, fontweight="bold", pad=8)
+
+    for i, label in enumerate(steps):
+        x = 0.35 + i
+        face = "#fff3cd" if highlight is not None and i == highlight else "#e8f4f8"
+        edge = "#e6a800" if highlight is not None and i == highlight else "#2c5f7c"
+        box = FancyBboxPatch(
+            (x - 0.32, 0.28),
+            0.64,
+            0.44,
+            boxstyle="round,pad=0.04,rounding_size=0.08",
+            linewidth=1.6,
+            edgecolor=edge,
+            facecolor=face,
+        )
+        ax.add_patch(box)
+        ax.text(x, 0.5, label, ha="center", va="center", fontsize=8.5, wrap=True)
+        if i < n - 1:
+            ax.add_patch(
+                FancyArrowPatch(
+                    (x + 0.34, 0.5),
+                    (x + 0.66, 0.5),
+                    arrowstyle="-|>",
+                    mutation_scale=12,
+                    linewidth=1.2,
+                    color="#555555",
+                )
+            )
+    fig.tight_layout()
+    return fig, ax

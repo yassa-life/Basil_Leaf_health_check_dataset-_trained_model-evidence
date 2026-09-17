@@ -72,7 +72,7 @@ from preprocess_utils import (
     SEED, SOURCE_URL, DOI, FOLDERS, CLASSES, paths,
     inventory_table, discover_images, audit_images,
     remove_exact_duplicates, iqr_mask, extract_feature_matrix, read_rgb,
-    stratified_sample,
+    stratified_sample, draw_process_flow,
 )
 
 P = paths(ROOT)
@@ -82,6 +82,14 @@ for d in (VIZ, OUT, LOGS):
 
 sns.set_theme(style="whitegrid", context="notebook")
 np.random.seed(SEED)
+PIPELINE_STEPS = [
+    "1 Missing\ndata",
+    "2 Categorical\nencoding",
+    "3 Outlier /\nduplicate",
+    "4 Feature\nengineering",
+    "5 Scaling",
+    "6 SelectKBest\n+ PCA",
+]
 print("Deliverable root:", ROOT)
 print("Raw data:", RAW)
 print("Dataset:", SOURCE_URL, "| DOI:", DOI)
@@ -112,6 +120,18 @@ Without this step, training would silently drop samples or crash mid-pipeline.
 """
             ),
             code(SETUP),
+            md("## 0. Process diagram — where this step sits in the pipeline"),
+            code(
+                r'''
+fig, _ = draw_process_flow(
+    PIPELINE_STEPS,
+    title="Preprocessing pipeline (Member 1 highlighted)",
+    highlight=0,
+)
+fig.savefig(VIZ / "m1_process_flow.png", dpi=150, bbox_inches="tight")
+plt.show()
+'''
+            ),
             md("## 1. Inventory expected vs found images"),
             code(
                 r'''
@@ -150,26 +170,46 @@ log = {
 print("Saved outputs under results/outputs and results/logs")
 '''
             ),
-            md("## 3. EDA visualization — class balance & completeness"),
+            md("## 3. EDA visualizations — class balance, completeness & comparisons"),
             code(
                 r'''
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+fig, axes = plt.subplots(2, 2, figsize=(13, 9))
 
-# Class counts among readable images
+# (1) Class counts among readable images
 class_counts = valid["label"].value_counts().reindex(CLASSES).fillna(0)
-axes[0].bar(class_counts.index, class_counts.values, color=["#2ca02c", "#d62728"])
-axes[0].set_title("Readable images per class")
-axes[0].set_ylabel("Count")
-for i, v in enumerate(class_counts.values):
-    axes[0].text(i, v + 5, str(int(v)), ha="center")
+bars = axes[0, 0].bar(class_counts.index, class_counts.values, color=["#2ca02c", "#d62728"])
+axes[0, 0].set_title("Readable images per class")
+axes[0, 0].set_ylabel("Count")
+for b, v in zip(bars, class_counts.values):
+    axes[0, 0].text(b.get_x() + b.get_width() / 2, v + 5, str(int(v)), ha="center")
 
-# Completeness by folder
-axes[1].barh(inv["folder"], inv["found"], color="#1f77b4", label="Found")
-axes[1].barh(inv["folder"], inv["missing_count"], left=inv["found"], color="#ff7f0e", label="Missing vs expected")
-axes[1].set_title("Folder completeness (found + missing)")
-axes[1].legend(loc="lower right")
-axes[1].set_xlabel("Images")
+# (2) Folder completeness stacked bars
+axes[0, 1].barh(inv["folder"], inv["found"], color="#1f77b4", label="Found")
+axes[0, 1].barh(inv["folder"], inv["missing_count"], left=inv["found"], color="#ff7f0e", label="Missing vs expected")
+axes[0, 1].set_title("Folder completeness (found + missing)")
+axes[0, 1].legend(loc="lower right")
+axes[0, 1].set_xlabel("Images")
 
+# (3) Expected vs found comparison (grouped bars)
+x = np.arange(len(inv))
+w = 0.35
+axes[1, 0].bar(x - w / 2, inv["expected"], width=w, label="Expected", color="#7f7f7f")
+axes[1, 0].bar(x + w / 2, inv["found"], width=w, label="Found", color="#1f77b4")
+axes[1, 0].set_xticks(x)
+axes[1, 0].set_xticklabels([f.replace("_Region_Basil_Plant_Healthy", "").replace("Basil_Plant_", "") for f in inv["folder"]], rotation=25, ha="right")
+axes[1, 0].set_title("Expected vs found (bar comparison)")
+axes[1, 0].set_ylabel("Images")
+axes[1, 0].legend()
+
+# (4) Audit outcome pie / bar
+audit_counts = pd.Series({"Valid": len(valid), "Rejected": len(rejected)})
+axes[1, 1].bar(audit_counts.index, audit_counts.values, color=["#2ca02c", "#d62728"])
+axes[1, 1].set_title("Audit outcome: valid vs rejected")
+axes[1, 1].set_ylabel("Count")
+for i, v in enumerate(audit_counts.values):
+    axes[1, 1].text(i, v + max(5, 0.01 * max(audit_counts.values)), str(int(v)), ha="center")
+
+fig.suptitle("Member 1 — Missing / corrupt data EDA", fontsize=14)
 fig.tight_layout()
 fig.savefig(VIZ / "m1_class_and_completeness.png", dpi=150, bbox_inches="tight")
 plt.show()
@@ -180,7 +220,7 @@ print("Interpretation: bars show whether both classes are present and whether an
                 """## Viva talking points
 1. Define missing data for **images** (absent files + failed loads).
 2. Show the inventory table and rejected list.
-3. Interpret the class-balance / completeness chart.
+3. Interpret the class-balance / expected-vs-found comparison charts.
 """
             ),
         ],
@@ -200,6 +240,18 @@ Folder names carry the **class** (Healthy / Unhealthy) and **region** (Amravati 
 """
             ),
             code(SETUP),
+            md("## 0. Process diagram — where this step sits in the pipeline"),
+            code(
+                r'''
+fig, _ = draw_process_flow(
+    PIPELINE_STEPS,
+    title="Preprocessing pipeline (Member 2 highlighted)",
+    highlight=1,
+)
+fig.savefig(VIZ / "m2_process_flow.png", dpi=150, bbox_inches="tight")
+plt.show()
+'''
+            ),
             md("## 1. Load audited index (or rebuild) and encode categories"),
             code(
                 r'''
@@ -234,24 +286,39 @@ encoded.to_csv(OUT / "m2_encoded_metadata.csv", index=False)
 )
 '''
             ),
-            md("## 2. EDA visualization — encoded category distributions"),
+            md("## 2. EDA visualizations — encoded distributions & class × region comparison"),
             code(
                 r'''
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+fig, axes = plt.subplots(2, 2, figsize=(13, 9))
 
 # Label codes
 lc = encoded["label_encoded"].value_counts().sort_index()
-axes[0].bar([CLASSES[i] for i in lc.index], lc.values, color=["#2ca02c", "#d62728"])
-axes[0].set_title("Encoded labels (0=Healthy, 1=Unhealthy)")
-axes[0].set_ylabel("Count")
+axes[0, 0].bar([CLASSES[i] for i in lc.index], lc.values, color=["#2ca02c", "#d62728"])
+axes[0, 0].set_title("Encoded labels (0=Healthy, 1=Unhealthy)")
+axes[0, 0].set_ylabel("Count")
 
 # Region codes
 rc = encoded.groupby("region")["region_encoded"].count().sort_values(ascending=False)
-axes[1].bar(rc.index, rc.values, color="#9467bd")
-axes[1].set_title("Images per region category")
-axes[1].tick_params(axis="x", rotation=20)
-axes[1].set_ylabel("Count")
+axes[0, 1].bar(rc.index, rc.values, color="#9467bd")
+axes[0, 1].set_title("Images per region category")
+axes[0, 1].tick_params(axis="x", rotation=20)
+axes[0, 1].set_ylabel("Count")
 
+# Class × region stacked / grouped comparison
+ct = pd.crosstab(encoded["region"], encoded["label"]).reindex(columns=CLASSES).fillna(0)
+ct.plot(kind="bar", ax=axes[1, 0], color=["#2ca02c", "#d62728"], rot=20)
+axes[1, 0].set_title("Class × region comparison (grouped bars)")
+axes[1, 0].set_ylabel("Count")
+axes[1, 0].set_xlabel("Region")
+
+# One-hot column totals
+oh_cols = [c for c in encoded.columns if c.startswith("region_")]
+oh_sums = encoded[oh_cols].sum().sort_values(ascending=False)
+axes[1, 1].barh([c.replace("region_", "") for c in oh_sums.index], oh_sums.values, color="#17becf")
+axes[1, 1].set_title("One-hot region column totals")
+axes[1, 1].set_xlabel("Count")
+
+fig.suptitle("Member 2 — Categorical encoding EDA", fontsize=14)
 fig.tight_layout()
 fig.savefig(VIZ / "m2_categorical_distributions.png", dpi=150, bbox_inches="tight")
 plt.show()
@@ -262,7 +329,7 @@ print("Interpretation: encoding preserves class/region structure while making co
                 """## Viva talking points
 1. Contrast label encoding vs one-hot encoding.
 2. Justify mapping Healthy→0, Unhealthy→1 from folder names.
-3. Interpret the region distribution chart (class imbalance by capture site).
+3. Interpret the region / class×region comparison charts.
 """
             ),
         ],
@@ -282,6 +349,18 @@ Duplicate leaves leak into both train and test if not removed. Extreme tiny/huge
 """
             ),
             code(SETUP),
+            md("## 0. Process diagram — where this step sits in the pipeline"),
+            code(
+                r'''
+fig, _ = draw_process_flow(
+    PIPELINE_STEPS,
+    title="Preprocessing pipeline (Member 3 highlighted)",
+    highlight=2,
+)
+fig.savefig(VIZ / "m3_process_flow.png", dpi=150, bbox_inches="tight")
+plt.show()
+'''
+            ),
             md("## 1. Start from encoded metadata / audit, drop duplicates & IQR outliers"),
             code(
                 r'''
@@ -321,20 +400,57 @@ removed.to_csv(OUT / "m3_removed_outliers.csv", index=False)
 )
 '''
             ),
-            md("## 2. EDA visualization — boxplots before filtering"),
+            md("## 2. EDA visualizations — boxplots, before/after counts, outlier scatter"),
             code(
                 r'''
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-sns.boxplot(data=df_unique, x="label", y="pixels", hue="label", order=CLASSES, ax=axes[0], palette=["#2ca02c", "#d62728"], legend=False)
-axes[0].set_title("Image resolution (pixels) by class")
-axes[0].set_ylabel("width × height")
+fig, axes = plt.subplots(2, 2, figsize=(13, 9))
 
-sns.boxplot(data=df_unique, x="label", y="mean_g", hue="label", order=CLASSES, ax=axes[1], palette=["#2ca02c", "#d62728"], legend=False)
-axes[1].set_title("Mean green intensity by class")
-axes[1].set_ylabel("Mean G (0–255)")
+sns.boxplot(data=df_unique, x="label", y="pixels", hue="label", order=CLASSES, ax=axes[0, 0], palette=["#2ca02c", "#d62728"], legend=False)
+axes[0, 0].set_title("Image resolution (pixels) by class")
+axes[0, 0].set_ylabel("width × height")
 
+sns.boxplot(data=df_unique, x="label", y="mean_g", hue="label", order=CLASSES, ax=axes[0, 1], palette=["#2ca02c", "#d62728"], legend=False)
+axes[0, 1].set_title("Mean green intensity by class")
+axes[0, 1].set_ylabel("Mean G (0–255)")
+
+# Before / after pipeline counts (comparison bars)
+stages = ["Audited", "After duplicates", "After IQR"]
+stage_counts = [before, len(df_unique), len(clean)]
+axes[1, 0].bar(stages, stage_counts, color=["#1f77b4", "#ff7f0e", "#2ca02c"])
+axes[1, 0].set_title("Sample count before vs after cleaning")
+axes[1, 0].set_ylabel("Images")
+for i, v in enumerate(stage_counts):
+    axes[1, 0].text(i, v + 5, str(v), ha="center")
+
+# Class counts before vs after (grouped comparison)
+before_cls = df["label"].value_counts().reindex(CLASSES).fillna(0)
+after_cls = clean["label"].value_counts().reindex(CLASSES).fillna(0)
+x = np.arange(len(CLASSES))
+w = 0.35
+axes[1, 1].bar(x - w / 2, before_cls.values, width=w, label="Before", color="#7f7f7f")
+axes[1, 1].bar(x + w / 2, after_cls.values, width=w, label="After clean", color=["#2ca02c", "#d62728"])
+axes[1, 1].set_xticks(x)
+axes[1, 1].set_xticklabels(CLASSES)
+axes[1, 1].set_title("Class counts before vs after (comparison)")
+axes[1, 1].set_ylabel("Images")
+axes[1, 1].legend()
+
+fig.suptitle("Member 3 — Outlier / duplicate removal EDA", fontsize=14)
 fig.tight_layout()
 fig.savefig(VIZ / "m3_outlier_boxplots.png", dpi=150, bbox_inches="tight")
+plt.show()
+
+# Extra: scatter of resolution vs green, mark removed outliers
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.scatter(clean["pixels"], clean["mean_g"], s=12, alpha=0.45, c="#1f77b4", label="Kept")
+if len(removed):
+    ax.scatter(removed["pixels"], removed["mean_g"], s=28, alpha=0.85, c="#d62728", marker="x", label="IQR removed")
+ax.set_xlabel("Resolution (pixels)")
+ax.set_ylabel("Mean green")
+ax.set_title("Outlier view: resolution vs mean green")
+ax.legend()
+fig.tight_layout()
+fig.savefig(VIZ / "m3_outlier_scatter.png", dpi=150, bbox_inches="tight")
 plt.show()
 print("Interpretation: points far outside the whiskers are candidates for IQR removal; both classes should still remain after cleaning.")
 '''
@@ -343,7 +459,7 @@ print("Interpretation: points far outside the whiskers are candidates for IQR re
                 """## Viva talking points
 1. Explain duplicate leakage risk.
 2. Explain IQR fences on `pixels` and `mean_g`.
-3. Interpret the boxplots and confirm both classes remain.
+3. Interpret the before/after comparison bars and boxplots.
 """
             ),
         ],
@@ -363,6 +479,18 @@ Color histogram bins and channel statistics sit on different numeric ranges. Dis
 """
             ),
             code(SETUP),
+            md("## 0. Process diagram — where this step sits in the pipeline"),
+            code(
+                r'''
+fig, _ = draw_process_flow(
+    PIPELINE_STEPS,
+    title="Preprocessing pipeline (Member 4 highlighted)",
+    highlight=4,
+)
+fig.savefig(VIZ / "m4_process_flow.png", dpi=150, bbox_inches="tight")
+plt.show()
+'''
+            ),
             code(
                 r'''
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -400,21 +528,47 @@ kept.to_csv(OUT / "m4_feature_sample_index.csv", index=False)
 print("Saved scaled feature matrices to results/outputs/m4_scaled_features.npz")
 '''
             ),
-            md("## EDA visualization — feature distribution before vs after StandardScaler"),
+            md("## EDA visualizations — before/after scaling & StandardScaler vs MinMax comparison"),
             code(
                 r'''
-# Compare first feature column distribution
 feat_idx = 0
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-axes[0].hist(X[:, feat_idx], bins=30, color="#1f77b4", alpha=0.85)
-axes[0].set_title(f"Raw feature[{feat_idx}]")
-axes[0].set_xlabel("Value")
-axes[0].set_ylabel("Frequency")
+fig, axes = plt.subplots(2, 2, figsize=(13, 9))
 
-axes[1].hist(X_std[:, feat_idx], bins=30, color="#ff7f0e", alpha=0.85)
-axes[1].set_title(f"StandardScaler feature[{feat_idx}]")
-axes[1].set_xlabel("Z-score")
+axes[0, 0].hist(X[:, feat_idx], bins=30, color="#1f77b4", alpha=0.85)
+axes[0, 0].set_title(f"Raw feature[{feat_idx}]")
+axes[0, 0].set_xlabel("Value")
+axes[0, 0].set_ylabel("Frequency")
 
+axes[0, 1].hist(X_std[:, feat_idx], bins=30, color="#ff7f0e", alpha=0.85)
+axes[0, 1].set_title(f"StandardScaler feature[{feat_idx}]")
+axes[0, 1].set_xlabel("Z-score")
+
+axes[1, 0].hist(X_mm[:, feat_idx], bins=30, color="#2ca02c", alpha=0.85)
+axes[1, 0].set_title(f"MinMaxScaler feature[{feat_idx}]")
+axes[1, 0].set_xlabel("Scaled [0, 1]")
+
+# Compare mean absolute feature scale across methods (bar comparison)
+methods = ["Raw", "StandardScaler", "MinMaxScaler"]
+mean_abs = [
+    float(np.mean(np.abs(X))),
+    float(np.mean(np.abs(X_std))),
+    float(np.mean(np.abs(X_mm))),
+]
+stds = [
+    float(np.mean(X.std(axis=0))),
+    float(np.mean(X_std.std(axis=0))),
+    float(np.mean(X_mm.std(axis=0))),
+]
+x = np.arange(len(methods))
+w = 0.35
+axes[1, 1].bar(x - w / 2, mean_abs, width=w, label="Mean |value|", color="#1f77b4")
+axes[1, 1].bar(x + w / 2, stds, width=w, label="Mean feature std", color="#ff7f0e")
+axes[1, 1].set_xticks(x)
+axes[1, 1].set_xticklabels(methods, rotation=15)
+axes[1, 1].set_title("Scaler comparison (bar plots)")
+axes[1, 1].legend()
+
+fig.suptitle("Member 4 — Normalization / scaling EDA", fontsize=14)
 fig.tight_layout()
 fig.savefig(VIZ / "m4_scaling_before_after.png", dpi=150, bbox_inches="tight")
 plt.show()
@@ -428,7 +582,7 @@ print("Interpretation: after StandardScaler, features centre near 0 with compara
                 """## Viva talking points
 1. Difference between StandardScaler and MinMaxScaler.
 2. Why image-derived histograms need scaling.
-3. Interpret the before/after histogram.
+3. Interpret the before/after histograms and scaler comparison bars.
 """
             ),
         ],
@@ -448,6 +602,18 @@ Raw pixels are high-dimensional and noisy. Compact color descriptors summarise *
 """
             ),
             code(SETUP),
+            md("## 0. Process diagram — where this step sits in the pipeline"),
+            code(
+                r'''
+fig, _ = draw_process_flow(
+    PIPELINE_STEPS,
+    title="Preprocessing pipeline (Member 5 highlighted)",
+    highlight=3,
+)
+fig.savefig(VIZ / "m5_process_flow.png", dpi=150, bbox_inches="tight")
+plt.show()
+'''
+            ),
             code(
                 r'''
 from skimage.color import rgb2hsv
@@ -482,20 +648,39 @@ feat_df.to_csv(OUT / "m5_engineered_color_features.csv", index=False)
 print("Engineered feature rows:", len(feat_df))
 '''
             ),
-            md("## EDA visualization — correlation heatmap of engineered features"),
+            md("## EDA visualizations — correlation, greenness & RGB channel comparisons"),
             code(
                 r'''
 num_cols = [c for c in feat_df.columns if c not in {"path", "label"}]
 corr = feat_df[num_cols].corr()
 
-fig, ax = plt.subplots(figsize=(8, 6))
-sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", center=0, ax=ax)
-ax.set_title("Correlation of engineered color features")
+fig, axes = plt.subplots(2, 2, figsize=(13, 10))
+
+sns.heatmap(corr, annot=True, fmt=".2f", cmap="coolwarm", center=0, ax=axes[0, 0])
+axes[0, 0].set_title("Correlation of engineered color features")
+
+sns.boxplot(data=feat_df, x="label", y="rgb_g_mean", hue="label", order=CLASSES, palette=["#2ca02c", "#d62728"], ax=axes[0, 1], legend=False)
+axes[0, 1].set_title("Mean green channel by class")
+
+# Grouped bar: mean RGB channels by class
+channel_means = feat_df.groupby("label")[["rgb_r_mean", "rgb_g_mean", "rgb_b_mean"]].mean().reindex(CLASSES)
+channel_means.plot(kind="bar", ax=axes[1, 0], color=["#d62728", "#2ca02c", "#1f77b4"], rot=0)
+axes[1, 0].set_title("RGB channel means by class (comparison)")
+axes[1, 0].set_ylabel("Mean intensity (0–1)")
+axes[1, 0].legend(title="Channel")
+
+# HSV mean comparison by class
+hsv_means = feat_df.groupby("label")[["hsv_h_mean", "hsv_s_mean", "hsv_v_mean"]].mean().reindex(CLASSES)
+hsv_means.plot(kind="bar", ax=axes[1, 1], color=["#9467bd", "#e377c2", "#8c564b"], rot=0)
+axes[1, 1].set_title("HSV channel means by class (comparison)")
+axes[1, 1].set_ylabel("Mean value")
+axes[1, 1].legend(title="Channel")
+
+fig.suptitle("Member 5 — Feature engineering EDA", fontsize=14)
 fig.tight_layout()
 fig.savefig(VIZ / "m5_feature_correlation_heatmap.png", dpi=150, bbox_inches="tight")
 plt.show()
 
-# Class-wise greenness comparison
 fig, ax = plt.subplots(figsize=(6, 4))
 sns.boxplot(data=feat_df, x="label", y="rgb_g_mean", hue="label", order=CLASSES, palette=["#2ca02c", "#d62728"], ax=ax, legend=False)
 ax.set_title("Mean green channel by class (engineered feature)")
@@ -509,7 +694,7 @@ print("Interpretation: correlation shows redundancy among features; green-channe
                 """## Viva talking points
 1. Why engineer RGB/HSV summaries instead of raw pixels.
 2. Walk through one feature (`rgb_g_mean`) and its meaning.
-3. Interpret the correlation heatmap / greenness boxplot.
+3. Interpret the correlation heatmap and RGB/HSV comparison bars.
 """
             ),
         ],
@@ -529,6 +714,18 @@ Engineered histograms are correlated and moderately wide. PCA compresses signal 
 """
             ),
             code(SETUP),
+            md("## 0. Process diagram — where this step sits in the pipeline"),
+            code(
+                r'''
+fig, _ = draw_process_flow(
+    PIPELINE_STEPS,
+    title="Preprocessing pipeline (Member 6 highlighted)",
+    highlight=5,
+)
+fig.savefig(VIZ / "m6_process_flow.png", dpi=150, bbox_inches="tight")
+plt.show()
+'''
+            ),
             code(
                 r'''
 from sklearn.feature_selection import SelectKBest, f_classif
@@ -575,28 +772,48 @@ pd.DataFrame({
 }).to_csv(OUT / "m6_pca_variance.csv", index=False)
 '''
             ),
-            md("## EDA visualization — PCA projection & explained variance"),
+            md("## EDA visualizations — F-scores, PCA variance bars & scatter"),
             code(
                 r'''
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+fig, axes = plt.subplots(2, 2, figsize=(13, 9))
 
-# Screes
-axes[0].plot(range(1, len(pca.explained_variance_ratio_) + 1), np.cumsum(pca.explained_variance_ratio_), marker="o")
-axes[0].set_xlabel("Number of principal components")
-axes[0].set_ylabel("Cumulative explained variance")
-axes[0].set_title("PCA explained variance")
-axes[0].axhline(0.9, color="red", ls="--", lw=1, label="90%")
-axes[0].legend()
+# SelectKBest F-scores (top features)
+scores = selector.scores_
+top_idx = np.argsort(scores)[::-1][:15]
+axes[0, 0].barh([f"f{i}" for i in top_idx[::-1]], scores[top_idx][::-1], color="#1f77b4")
+axes[0, 0].set_title("SelectKBest ANOVA F-scores (top 15)")
+axes[0, 0].set_xlabel("F-score")
+
+# PCA explained variance — bar + cumulative line
+pcs = np.arange(1, len(pca.explained_variance_ratio_) + 1)
+axes[0, 1].bar(pcs, pca.explained_variance_ratio_, color="#ff7f0e", label="Per-PC ratio")
+axes[0, 1].plot(pcs, np.cumsum(pca.explained_variance_ratio_), marker="o", color="#d62728", label="Cumulative")
+axes[0, 1].axhline(0.9, color="gray", ls="--", lw=1, label="90%")
+axes[0, 1].set_xlabel("Principal component")
+axes[0, 1].set_ylabel("Explained variance")
+axes[0, 1].set_title("PCA explained variance (bars + cumulative)")
+axes[0, 1].legend(fontsize=8)
 
 # 2D scatter
 for cls, color in zip(CLASSES, ["#2ca02c", "#d62728"]):
     mask = y == cls
-    axes[1].scatter(X_pca[mask, 0], X_pca[mask, 1], s=18, alpha=0.7, label=cls, c=color)
-axes[1].set_xlabel("PC1")
-axes[1].set_ylabel("PC2")
-axes[1].set_title("PCA scatter (SelectKBest → PCA)")
-axes[1].legend()
+    axes[1, 0].scatter(X_pca[mask, 0], X_pca[mask, 1], s=18, alpha=0.7, label=cls, c=color)
+axes[1, 0].set_xlabel("PC1")
+axes[1, 0].set_ylabel("PC2")
+axes[1, 0].set_title("PCA scatter (SelectKBest → PCA)")
+axes[1, 0].legend()
 
+# Dimensionality funnel comparison bars
+dims = ["Raw features", "After SelectKBest", "After PCA"]
+dim_vals = [X_std.shape[1], X_sel.shape[1], X_pca.shape[1]]
+axes[1, 1].bar(dims, dim_vals, color=["#7f7f7f", "#1f77b4", "#2ca02c"])
+axes[1, 1].set_title("Feature dimensionality reduction (comparison)")
+axes[1, 1].set_ylabel("Dimensions")
+axes[1, 1].tick_params(axis="x", rotation=15)
+for i, v in enumerate(dim_vals):
+    axes[1, 1].text(i, v + 0.5, str(v), ha="center")
+
+fig.suptitle("Member 6 — Feature selection & PCA EDA", fontsize=14)
 fig.tight_layout()
 fig.savefig(VIZ / "m6_pca_variance_and_scatter.png", dpi=150, bbox_inches="tight")
 plt.show()
@@ -606,7 +823,7 @@ print("Interpretation: if Healthy/Unhealthy form soft clusters in PC1–PC2, eng
             md(
                 """## Viva talking points
 1. Role of SelectKBest vs PCA (filter selection vs rotation/compression).
-2. Read the cumulative variance curve.
+2. Read the F-score bars and cumulative variance curve.
 3. Interpret class separation on the PC1–PC2 scatter.
 """
             ),
@@ -622,9 +839,23 @@ group_cells = [
 This notebook **combines Members 1–6** into one logical flow for Progress Review I (group component).
 
 **Order:** Missing data → Categorical encoding → Outlier/duplicate removal → Feature engineering → Scaling → Feature selection / PCA → save artefacts.
+
+All process diagrams, comparison bar plots, boxplots, heatmaps, and PCA charts are generated here and under each member notebook.
 """
     ),
     code(SETUP),
+    md("## 0. End-to-end process diagram"),
+    code(
+        r'''
+fig, _ = draw_process_flow(
+    PIPELINE_STEPS,
+    title="Group preprocessing pipeline — full process flow",
+    highlight=None,
+)
+fig.savefig(VIZ / "group_process_flow.png", dpi=150, bbox_inches="tight")
+plt.show()
+'''
+    ),
     md("## Step 1–3 — Inventory, audit, encode, clean"),
     code(
         r'''
@@ -655,6 +886,49 @@ print(f"Duplicates removed={n_dup} | IQR removed={(~mask).sum()} | Clean={len(cl
 print(clean["label"].value_counts())
 '''
     ),
+    md("## Cleaning funnel & class / region comparison charts"),
+    code(
+        r'''
+fig, axes = plt.subplots(2, 2, figsize=(13, 9))
+
+# Funnel of sample counts through early steps
+funnel_labels = ["Discovered", "Valid", "Unique", "Clean"]
+funnel_vals = [len(discovered), len(valid), len(unique), len(clean)]
+axes[0, 0].bar(funnel_labels, funnel_vals, color=["#7f7f7f", "#1f77b4", "#ff7f0e", "#2ca02c"])
+axes[0, 0].set_title("Cleaning funnel (bar comparison)")
+axes[0, 0].set_ylabel("Images")
+for i, v in enumerate(funnel_vals):
+    axes[0, 0].text(i, v + 5, str(v), ha="center")
+
+# Expected vs found
+x = np.arange(len(inv))
+w = 0.35
+short = [f.replace("_Region_Basil_Plant_Healthy", "").replace("Basil_Plant_", "") for f in inv["folder"]]
+axes[0, 1].bar(x - w / 2, inv["expected"], width=w, label="Expected", color="#7f7f7f")
+axes[0, 1].bar(x + w / 2, inv["found"], width=w, label="Found", color="#1f77b4")
+axes[0, 1].set_xticks(x)
+axes[0, 1].set_xticklabels(short, rotation=25, ha="right")
+axes[0, 1].set_title("Expected vs found by folder")
+axes[0, 1].legend()
+
+# Clean class counts
+class_counts = clean["label"].value_counts().reindex(CLASSES).fillna(0)
+axes[1, 0].bar(class_counts.index, class_counts.values, color=["#2ca02c", "#d62728"])
+axes[1, 0].set_title("Clean class counts")
+axes[1, 0].set_ylabel("Count")
+
+# Class × region after cleaning
+ct = pd.crosstab(clean["region"], clean["label"]).reindex(columns=CLASSES).fillna(0)
+ct.plot(kind="bar", ax=axes[1, 1], color=["#2ca02c", "#d62728"], rot=20)
+axes[1, 1].set_title("Clean class × region comparison")
+axes[1, 1].set_ylabel("Count")
+
+fig.suptitle("Group pipeline — inventory & cleaning comparisons", fontsize=14)
+fig.tight_layout()
+fig.savefig(VIZ / "group_cleaning_comparisons.png", dpi=150, bbox_inches="tight")
+plt.show()
+'''
+    ),
     md("## Step 4–6 — Features, scaling, selection, PCA"),
     code(
         r'''
@@ -666,8 +940,8 @@ X, y, kept = extract_feature_matrix(RAW, sample)
 X_scaled = StandardScaler().fit_transform(X)
 y_enc = LabelEncoder().fit_transform(y)
 
-k = min(20, X_scaled.shape[1])
-X_sel = SelectKBest(f_classif, k=k).fit_transform(X_scaled, y_enc)
+selector = SelectKBest(f_classif, k=min(20, X_scaled.shape[1]))
+X_sel = selector.fit_transform(X_scaled, y_enc)
 pca = PCA(n_components=min(5, X_sel.shape[1]), random_state=SEED)
 X_pca = pca.fit_transform(X_sel)
 
@@ -675,6 +949,52 @@ print("Raw features:", X.shape)
 print("After SelectKBest:", X_sel.shape)
 print("After PCA:", X_pca.shape)
 print("PCA variance:", np.round(pca.explained_variance_ratio_, 4))
+'''
+    ),
+    md("## Feature / scaling / PCA comparison visualizations"),
+    code(
+        r'''
+fig, axes = plt.subplots(2, 2, figsize=(13, 9))
+
+sns.boxplot(data=unique, x="label", y="mean_g", hue="label", order=CLASSES, ax=axes[0, 0], palette=["#2ca02c", "#d62728"], legend=False)
+axes[0, 0].set_title("Green intensity (outlier view)")
+
+axes[0, 1].hist(X[:, 0], bins=25, alpha=0.55, label="raw")
+axes[0, 1].hist(X_scaled[:, 0], bins=25, alpha=0.55, label="scaled")
+axes[0, 1].set_title("Feature[0] before/after scaling")
+axes[0, 1].legend()
+
+# PCA variance bars
+pcs = np.arange(1, len(pca.explained_variance_ratio_) + 1)
+axes[1, 0].bar(pcs, pca.explained_variance_ratio_, color="#ff7f0e", label="Per-PC")
+axes[1, 0].plot(pcs, np.cumsum(pca.explained_variance_ratio_), "o-", color="#d62728", label="Cumulative")
+axes[1, 0].set_title("PCA explained variance (comparison)")
+axes[1, 0].set_xlabel("PC")
+axes[1, 0].legend(fontsize=8)
+
+for cls, color in zip(CLASSES, ["#2ca02c", "#d62728"]):
+    m = y == cls
+    axes[1, 1].scatter(X_pca[m, 0], X_pca[m, 1], s=16, alpha=0.75, c=color, label=cls)
+axes[1, 1].set_title("PCA scatter after selection")
+axes[1, 1].legend()
+
+fig.suptitle("Group pipeline — feature & PCA EDA", fontsize=14)
+fig.tight_layout()
+fig.savefig(VIZ / "group_feature_pca_comparisons.png", dpi=150, bbox_inches="tight")
+plt.show()
+
+# Dimensionality reduction comparison
+fig, ax = plt.subplots(figsize=(7, 4))
+dims = ["Raw features", "SelectKBest", "PCA"]
+dim_vals = [X.shape[1], X_sel.shape[1], X_pca.shape[1]]
+ax.bar(dims, dim_vals, color=["#7f7f7f", "#1f77b4", "#2ca02c"])
+ax.set_title("Dimensionality reduction funnel")
+ax.set_ylabel("Feature dimensions")
+for i, v in enumerate(dim_vals):
+    ax.text(i, v + 0.5, str(v), ha="center")
+fig.tight_layout()
+fig.savefig(VIZ / "group_dimension_funnel.png", dpi=150, bbox_inches="tight")
+plt.show()
 '''
     ),
     md("## Save group artefacts + summary EDA panel"),
@@ -739,7 +1059,8 @@ print("Logs →", LOGS)
         """## Collaboration checklist
 - [x] Member techniques integrated in dependency order  
 - [x] Shared helpers in `src/preprocess_utils.py`  
-- [x] Plots under `results/eda_visualizations/`  
+- [x] Process-flow diagrams for each step  
+- [x] Comparison bar plots, boxplots, heatmaps, PCA charts under `results/eda_visualizations/`  
 - [x] Processed outputs under `results/outputs/`  
 - [x] Run log under `results/logs/`  
 """

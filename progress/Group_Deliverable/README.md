@@ -52,16 +52,22 @@ Group_ID/
 
 Each member owns **one preprocessing technique**, explains why it is needed for this image dataset, shows code/output, and presents **at least one EDA visualization**.
 
-| Member | Notebook | Technique | Primary EDA plot |
+| Member | Notebook | Technique | Primary EDA plots |
 |---|---|---|---|
-| 1 | `ITXXXXXX1_Missing_Data.ipynb` | Handling missing / corrupt data | Class & completeness bar chart |
-| 2 | `ITXXXXXX2_Categorical_Encoding.ipynb` | Encoding categorical variables | Encoded label / region counts |
-| 3 | `ITXXXXXX3_Outlier_Removal.ipynb` | Outlier & duplicate removal | Boxplot of image size / brightness |
-| 4 | `ITXXXXXX4_Normalization_Scaling.ipynb` | Normalization / scaling | Feature distribution before vs after scale |
-| 5 | `ITXXXXXX5_Feature_Engineering.ipynb` | Feature engineering (color/texture) | Feature correlation heatmap |
-| 6 | `ITXXXXXX6_Feature_Selection_PCA.ipynb` | Feature selection & PCA | PCA scatter / explained variance |
+| 1 | `ITXXXXXX1_Missing_Data.ipynb` | Handling missing / corrupt data | Process flow; class bars; expected vs found; completeness |
+| 2 | `ITXXXXXX2_Categorical_Encoding.ipynb` | Encoding categorical variables | Process flow; label/region bars; class × region comparison |
+| 3 | `ITXXXXXX3_Outlier_Removal.ipynb` | Outlier & duplicate removal | Process flow; boxplots; before/after count bars; outlier scatter |
+| 4 | `ITXXXXXX4_Normalization_Scaling.ipynb` | Normalization / scaling | Process flow; before/after histograms; Standard vs MinMax bars |
+| 5 | `ITXXXXXX5_Feature_Engineering.ipynb` | Feature engineering (color/texture) | Process flow; correlation heatmap; RGB/HSV class comparison bars |
+| 6 | `ITXXXXXX6_Feature_Selection_PCA.ipynb` | Feature selection & PCA | Process flow; F-score bars; PCA variance bars; PC scatter |
 
-**Group component:** run `group_pipeline.ipynb` — it chains all six steps into one commented pipeline and writes final artefacts under `results/`.
+**Group component:** run `group_pipeline.ipynb` — it chains all six steps, draws the full process diagram, comparison bar charts, and PCA panels, and writes artefacts under `results/`.
+
+To regenerate every PNG without opening Jupyter:
+
+```powershell
+.\.venv\Scripts\python.exe progress\Group_Deliverable\_generate_all_visualizations.py
+```
 
 ---
 

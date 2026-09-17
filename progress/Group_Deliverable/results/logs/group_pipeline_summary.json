@@ -4,5 +4,23 @@
   "rejected": 0,
   "duplicates_removed": 7,
   "clean": 1076,
-  "feature_rows": 160
+  "feature_rows": 300,
+  "feature_dim": 60,
+  "pca_explained_variance_ratio": [
+    0.6928370594978333,
+    0.0788809061050415,
+    0.05432331562042236,
+    0.04863037168979645,
+    0.03554825857281685
+  ],
+  "label_map": {
+    "Healthy": 0,
+    "Unhealthy": 1
+  },
+  "region_map": {
+    "Amravati": 0,
+    "Nagpur": 1,
+    "Pune": 2,
+    "Unknown": 3
+  }
 }
