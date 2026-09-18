@@ -1,0 +1,10 @@
+{
+  "before": 1131,
+  "duplicates_removed": 7,
+  "iqr_removed": 48,
+  "after": 1076,
+  "class_counts": {
+    "Healthy": 609,
+    "Unhealthy": 467
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "label_map": {
+    "Healthy": 0,
+    "Unhealthy": 1
+  },
+  "region_map": {
+    "Amravati": 0,
+    "Nagpur": 1,
+    "Pune": 2,
+    "Unknown": 3
+  }
+}

@@ -621,7 +621,7 @@ from PIL import Image
 
 meta_path = OUT / "m3_cleaned_no_outliers.csv"
 meta = pd.read_csv(meta_path) if meta_path.exists() else audit_images(RAW)[0]
-sample = stratified_sample(meta, 100)
+sample = meta  # Process all images in the dataset
 
 # Build a readable feature table (subset of engineered columns)
 rows = []
