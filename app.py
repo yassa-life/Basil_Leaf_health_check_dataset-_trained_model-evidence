@@ -4,14 +4,10 @@ from io import BytesIO
 import csv
 import json
 import time
-import warnings
 
 import joblib
-import numpy as np
 from flask import Flask, jsonify, render_template, request, send_file, abort
-from PIL import Image, ImageOps, UnidentifiedImageError
-from skimage.color import rgb2gray, rgb2hsv
-from skimage.feature import hog, local_binary_pattern
+from PIL import Image, UnidentifiedImageError
 
 ROOT = Path(__file__).resolve().parent
 OUTPUT = ROOT / "outputs"
@@ -22,36 +18,7 @@ app = Flask(__name__)
 app.config.update(MAX_CONTENT_LENGTH=12 * 1024 * 1024, TRUSTED_HOSTS=["127.0.0.1", "localhost"])
 
 
-def read_rgb(source):
-    """Same decoding and feature computation as the self-contained notebook."""
-    with warnings.catch_warnings():
-        warnings.simplefilter("error", Image.DecompressionBombWarning)
-        with Image.open(source) as opened:
-            if opened.format not in {"JPEG", "PNG", "WEBP", "BMP", "TIFF"}:
-                raise ValueError("Use a JPEG, PNG, WebP, BMP or TIFF image.")
-            if min(opened.size) < 16:
-                raise ValueError("Image is too small; both dimensions must be at least 16 pixels.")
-            opened.load()
-            return ImageOps.exif_transpose(opened).convert("RGB")
-
-
-def handcrafted(image):
-    # Keep identical to the notebook; tested against its actual function.
-    rgb = np.asarray(image.resize((128, 128), Image.Resampling.BILINEAR), dtype=np.float32) / 255
-    hsv = rgb2hsv(rgb)
-    parts = []
-    for array in (rgb, hsv):
-        for channel in range(3):
-            h, _ = np.histogram(array[:, :, channel], bins=16, range=(0, 1))
-            parts.append(h.astype(np.float32) / h.sum())
-        parts.extend([array.mean(axis=(0, 1)), array.std(axis=(0, 1))])
-    gray = (rgb2gray(rgb) * 255).astype(np.uint8)
-    lbp = local_binary_pattern(gray, P=8, R=1, method="uniform")
-    h, _ = np.histogram(lbp, bins=np.arange(11), density=False)
-    parts.append(h.astype(np.float32) / h.sum())
-    small = np.asarray(image.resize((64, 64)).convert("L"), dtype=np.float32) / 255
-    parts.append(hog(small, orientations=9, pixels_per_cell=(8, 8), cells_per_block=(2, 2)))
-    return np.concatenate([np.ravel(p) for p in parts]).astype(np.float32)
+from parts._pipeline import read_rgb, handcrafted
 
 
 # Only our own fixed local artifact is loaded. Uploaded files are never deserialized.

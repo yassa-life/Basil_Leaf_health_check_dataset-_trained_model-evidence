@@ -1,6 +1,7 @@
 ﻿"""Train a CNN basil-leaf classifier and write analytics under CNN/outputs/."""
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
@@ -30,28 +31,35 @@ from _pipeline import CLASSES, SEED, audit_dataset, find_root, make_splits, read
 
 IMG_SIZE = 128
 BATCH_SIZE = 32
-EPOCHS = 20
+EPOCHS = 16
 LR = 1e-3
 MODEL_NAME = "BasilLeafCNN"
 FEATURE_VERSION = "cnn-rgb-128-v1"
 
 
 class LeafDataset(Dataset):
-    def __init__(self, frame, data_dir, indices, label_to_idx):
+    def __init__(self, frame, data_dir, indices, label_to_idx, augment=False):
         self.frame = frame.iloc[indices].reset_index(drop=True)
         self.data_dir = Path(data_dir)
         self.label_to_idx = label_to_idx
+        self.augment = augment
+        self.images = []
+        for path in self.frame.path:
+            image = read_rgb(self.data_dir / path).resize((IMG_SIZE, IMG_SIZE), Image.Resampling.BILINEAR)
+            arr = np.asarray(image, dtype=np.float32) / 127.5 - 1.0
+            self.images.append(torch.from_numpy(arr).permute(2, 0, 1))
 
     def __len__(self):
         return len(self.frame)
 
     def __getitem__(self, i):
         row = self.frame.iloc[i]
-        image = read_rgb(self.data_dir / row.path).resize((IMG_SIZE, IMG_SIZE), Image.Resampling.BILINEAR)
-        arr = np.asarray(image, dtype=np.float32) / 255.0
-        arr = (arr - 0.5) / 0.5
-        tensor = torch.from_numpy(arr).permute(2, 0, 1)
+        tensor = self.images[i].clone()
+        if self.augment:
+            if torch.rand(()) < 0.5: tensor = tensor.flip(2)
+            if torch.rand(()) < 0.5: tensor = tensor.flip(1)
         return tensor, self.label_to_idx[row.label]
+
 
 
 class BasilLeafCNN(nn.Module):
@@ -112,6 +120,11 @@ def evaluate(model, loader, criterion, device):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--epochs', type=int, default=EPOCHS)
+    args = parser.parse_args()
+    if args.epochs < 1: parser.error('--epochs must be positive')
+    torch.set_num_threads(2)
     set_seed(SEED)
     root = find_root(ROOT)
     cnn_dir = root / "CNN"
@@ -136,7 +149,7 @@ def main():
     label_to_idx = {c: i for i, c in enumerate(CLASSES)}
     idx_to_label = {i: c for c, i in label_to_idx.items()}
 
-    train_loader = DataLoader(LeafDataset(frame, data_dir, train_idx, label_to_idx), batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
+    train_loader = DataLoader(LeafDataset(frame, data_dir, train_idx, label_to_idx, augment=True), batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
     val_loader = DataLoader(LeafDataset(frame, data_dir, val_idx, label_to_idx), batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
     test_loader = DataLoader(LeafDataset(frame, data_dir, test_idx, label_to_idx), batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
 
@@ -146,28 +159,38 @@ def main():
     weights = weights / weights.mean()
     class_weights = torch.tensor(weights, dtype=torch.float32)
 
-    device = torch.device("cpu")
-    model = BasilLeafCNN(n_classes=len(CLASSES)).to(device)
-    criterion = nn.CrossEntropyLoss(weight=class_weights)
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR, weight_decay=1e-4)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode="max", factor=0.5, patience=2)
-
-    history, best_val_f1, best_state = [], -1.0, None
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    criterion = nn.CrossEntropyLoss(weight=class_weights.to(device))
+    configs = [dict(lr=1e-3, weight_decay=1e-4), dict(lr=3e-4, weight_decay=1e-3)]
+    trials, all_history = [], []
+    best_val_f1, best_state, history = -1.0, None, []
     start = time.perf_counter()
-    for epoch in range(1, EPOCHS + 1):
-        tr_loss, tr_acc = train_one_epoch(model, train_loader, optimizer, criterion, device)
-        va_loss, va_acc, y_true, y_pred = evaluate(model, val_loader, criterion, device)
-        va_f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
-        scheduler.step(va_f1)
-        history.append({"epoch": epoch, "train_loss": tr_loss, "train_acc": tr_acc, "val_loss": va_loss, "val_acc": va_acc, "val_macro_f1": float(va_f1), "lr": float(optimizer.param_groups[0]["lr"])})
-        print(f"Epoch {epoch:02d}/{EPOCHS} | train_loss={tr_loss:.4f} acc={tr_acc:.4f} | val_loss={va_loss:.4f} acc={va_acc:.4f} f1={va_f1:.4f}")
-        if va_f1 > best_val_f1:
-            best_val_f1 = float(va_f1)
-            best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
-
+    for trial, config in enumerate(configs):
+        set_seed(SEED)
+        model = BasilLeafCNN(n_classes=len(CLASSES)).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), **config)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=2)
+        trial_best, stale, trial_state, trial_history = -1.0, 0, None, []
+        for epoch in range(1, args.epochs + 1):
+            tr_loss, tr_acc = train_one_epoch(model, train_loader, optimizer, criterion, device)
+            va_loss, va_acc, y_true, y_pred = evaluate(model, val_loader, criterion, device)
+            va_f1 = float(f1_score(y_true, y_pred, average='macro', zero_division=0))
+            scheduler.step(va_f1)
+            row = dict(trial=trial, epoch=epoch, train_loss=tr_loss, train_acc=tr_acc, val_loss=va_loss, val_acc=va_acc, val_macro_f1=va_f1, lr=optimizer.param_groups[0]['lr'])
+            trial_history.append(row); all_history.append(row)
+            print(f'Trial {trial+1}/2 epoch {epoch}/{args.epochs}: validation F1={va_f1:.4f}', flush=True)
+            if va_f1 > trial_best:
+                trial_best, stale = va_f1, 0
+                trial_state = {k:v.detach().cpu().clone() for k,v in model.state_dict().items()}
+            else: stale += 1
+            if stale >= 4: break
+        trials.append(dict(trial=trial, **config, best_val_macro_f1=trial_best, epochs_run=len(trial_history)))
+        if trial_best > best_val_f1:
+            best_val_f1, best_state, history, best_config = trial_best, trial_state, trial_history, config
+    pd.DataFrame(trials).to_csv(results / 'tuning_results.csv', index=False)
+    pd.DataFrame(all_history).to_csv(analytics / 'all_trials_history.csv', index=False)
     fit_time = time.perf_counter() - start
-    if best_state is not None:
-        model.load_state_dict(best_state)
+    model.load_state_dict(best_state)
 
     te_loss, te_acc, y_te, y_hat = evaluate(model, test_loader, criterion, device)
     y_te_lbl = np.array([idx_to_label[i] for i in y_te])
@@ -176,11 +199,14 @@ def main():
     cm = confusion_matrix(y_te_lbl, y_hat_lbl, labels=CLASSES)
     report = classification_report(y_te_lbl, y_hat_lbl, labels=CLASSES, output_dict=True, zero_division=0)
 
-    np.random.seed(SEED)
+    rng = np.random.default_rng(SEED)
+    groups = frame.iloc[test_idx].split_group.to_numpy()
+    unique_groups = np.unique(groups)
     boot = []
     n = len(y_te_lbl)
     for _ in range(1000):
-        idx = np.random.choice(n, size=n, replace=True)
+        sampled = rng.choice(unique_groups, len(unique_groups), replace=True)
+        idx = np.concatenate([np.flatnonzero(groups == g) for g in sampled])
         boot.append(f1_score(y_te_lbl[idx], y_hat_lbl[idx], average="macro", zero_division=0))
     ci_lo, ci_hi = np.percentile(boot, [2.5, 97.5])
 
@@ -218,8 +244,8 @@ def main():
 
     metrics = {
         "model_name": MODEL_NAME, "method": "CNN", "pipeline_stage": "Deep Learning Image Classification",
-        "feature_version": FEATURE_VERSION, "img_size": IMG_SIZE, "epochs": EPOCHS, "batch_size": BATCH_SIZE,
-        "learning_rate": LR, "optimizer": "Adam", "best_val_macro_f1": best_val_f1,
+        "feature_version": FEATURE_VERSION, "img_size": IMG_SIZE, "epochs": len(history), "max_epochs": args.epochs, "early_stopping_patience": 4, "tuning_trials": trials, "augmentation": "training-only horizontal and vertical flips", "batch_size": BATCH_SIZE,
+        "learning_rate": best_config["lr"], "weight_decay": best_config["weight_decay"], "optimizer": "Adam", "best_val_macro_f1": best_val_f1,
         "accuracy": float(accuracy_score(y_te_lbl, y_hat_lbl)), "macro_f1": float(f1), "precision": float(p),
         "recall": float(r), "test_loss": float(te_loss), "bootstrap_95_ci": [float(ci_lo), float(ci_hi)],
         "fit_time_seconds": float(fit_time), "confusion_matrix": cm.tolist(),
@@ -230,11 +256,6 @@ def main():
     }
     (results / "cnn_metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
 
-    compare_path = root / "parts" / "gradient_boosting" / "outputs" / "model_comparison_6_members.csv"
-    rows = pd.read_csv(compare_path).to_dict("records") if compare_path.exists() else []
-    rows.append({"Model": MODEL_NAME, "Stage": "CNN Deep Learning", "Accuracy": metrics["accuracy"], "Macro_F1": metrics["macro_f1"], "Fit_Time_s": metrics["fit_time_seconds"]})
-    pd.DataFrame(rows).to_csv(results / "model_comparison_with_cnn.csv", index=False)
-
     summary = "\n".join(
         [
             "# CNN Holdout Results",
@@ -244,20 +265,20 @@ def main():
             f"- **Macro F1**: {metrics['macro_f1']:.4f}",
             f"- **Precision**: {metrics['precision']:.4f}",
             f"- **Recall**: {metrics['recall']:.4f}",
-            f"- **95% Bootstrap CI (macro F1)**: [{ci_lo:.4f}, {ci_hi:.4f}]",
+            f"- **95% group-bootstrap CI (macro F1)**: [{ci_lo:.4f}, {ci_hi:.4f}]",
             f"- **Best val macro-F1**: {best_val_f1:.4f}",
             f"- **Fit time**: {fit_time:.1f}s on {device}",
             f"- **Split**: train={len(train_idx)}, val={len(val_idx)}, test={len(test_idx)}",
             f"- **Confusion matrix** (Healthy / Unhealthy): {cm.tolist()}",
             "",
-            "See `class_performance.json`, `test_predictions.csv`, and `model_comparison_with_cnn.csv` in this folder.",
+            "See `class_performance.json`, `test_predictions.csv`, and `tuning_results.csv` in this folder.",
         ]
     )
     (results / "RESULTS.md").write_text(summary + "\n", encoding="utf-8")
 
     print("\n=== Holdout results ===")
     print(f"Accuracy: {metrics['accuracy']:.4f} | Macro F1: {metrics['macro_f1']:.4f}")
-    print(f"95% Bootstrap CI: [{ci_lo:.4f}, {ci_hi:.4f}]")
+    print(f"95% group-bootstrap CI: [{ci_lo:.4f}, {ci_hi:.4f}]")
     print("Confusion matrix:\n", cm)
     print("Saved model to:", out)
     print("Saved analytics to:", analytics)

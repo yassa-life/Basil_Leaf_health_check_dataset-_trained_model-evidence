@@ -1,13 +1,13 @@
 {
   "status": "trained",
-  "trained_at": "2026-09-15T06:02:38.713554+00:00",
-  "selected_model": "Random forest",
+  "trained_at": "2026-09-27T10:25:20.257283+00:00",
+  "selected_model": "Gradient Boosting",
   "features": "handcrafted",
   "classes": [
     "Healthy",
     "Unhealthy"
   ],
-  "selection_reason": "Random forest had the highest mean grouped 3-fold development macro-F1 (0.9633). Macro-F1 weights each class equally. Exact score ties are broken by mean classifier fitting time, then model name. The holdout was excluded from selection.",
+  "selection_reason": "Gradient Boosting had the highest mean grouped 3-fold development macro-F1 (0.9727). Macro-F1 weights each class equally. Exact score ties are broken by mean classifier fitting time, then model name. The holdout was excluded from selection.",
   "dataset_fingerprint": "45649c31a10fc7497fd7e5875b8adcf043ed607a184cb90742f06882bf040e1d",
   "data_audit": {
     "source": "https://ieee-dataport.org/open-access/leaves-indias-most-famous-basil-plant-leaves-quality-dataset",
@@ -65,50 +65,50 @@
   "development_images": 899,
   "test_images": 225,
   "metrics": {
-    "accuracy": 0.9822222222222222,
-    "balanced_accuracy": 0.9791666666666667,
-    "macro_f1": 0.9817281143414001,
+    "accuracy": 0.9866666666666667,
+    "balanced_accuracy": 0.9870397286821706,
+    "macro_f1": 0.986391403399125,
     "macro_f1_group_bootstrap_95_interval": [
-      0.9592960492042308,
-      0.995719480367341
+      0.9682489840294479,
+      1.0
     ],
-    "classifier_ms_per_image": 1.107391555690103,
+    "classifier_ms_per_image": 0.04219155551658736,
     "test_images": 225,
     "classification_report": {
       "Healthy": {
-        "precision": 0.9699248120300752,
-        "recall": 1.0,
-        "f1-score": 0.9847328244274809,
+        "precision": 0.9921875,
+        "recall": 0.9844961240310077,
+        "f1-score": 0.9883268482490273,
         "support": 129.0
       },
       "Unhealthy": {
-        "precision": 1.0,
-        "recall": 0.9583333333333334,
-        "f1-score": 0.9787234042553191,
+        "precision": 0.979381443298969,
+        "recall": 0.9895833333333334,
+        "f1-score": 0.9844559585492227,
         "support": 96.0
       },
-      "accuracy": 0.9822222222222222,
+      "accuracy": 0.9866666666666667,
       "macro avg": {
-        "precision": 0.9849624060150376,
-        "recall": 0.9791666666666667,
-        "f1-score": 0.9817281143414001,
+        "precision": 0.9857844716494846,
+        "recall": 0.9870397286821706,
+        "f1-score": 0.986391403399125,
         "support": 225.0
       },
       "weighted avg": {
-        "precision": 0.9827568922305765,
-        "recall": 0.9822222222222222,
-        "f1-score": 0.9821688051540253,
+        "precision": 0.9867235824742269,
+        "recall": 0.9866666666666667,
+        "f1-score": 0.9866752686437773,
         "support": 225.0
       }
     },
     "confusion_matrix": [
       [
-        129,
-        0
+        127,
+        2
       ],
       [
-        4,
-        92
+        1,
+        95
       ]
     ],
     "classes": [
@@ -118,67 +118,84 @@
   },
   "comparison": [
     {
-      "model": "Random forest",
+      "model": "Gradient Boosting",
       "features": "handcrafted",
-      "cv_macro_f1": 0.9633468513926826,
-      "cv_std": 0.007173547262889574,
-      "cv_accuracy": 0.9643961352657006,
-      "mean_fit_seconds": 1.2306892999913543
+      "cv_macro_f1": 0.9726717586324684,
+      "cv_std": 0.009689066438434417,
+      "cv_accuracy": 0.9732961724266073,
+      "mean_fit_seconds": 1.008581320444743,
+      "accuracy": 0.9866666666666667,
+      "macro_f1": 0.986391403399125,
+      "tuning_seconds": 30.154474699986167,
+      "candidate_count": 8
     },
     {
-      "model": "RBF SVM C=10.0",
+      "model": "Random Forest",
       "features": "handcrafted",
-      "cv_macro_f1": 0.9426266671400348,
-      "cv_std": 0.024552811793589324,
-      "cv_accuracy": 0.9444109996283908,
-      "mean_fit_seconds": 0.4005757333555569
+      "cv_macro_f1": 0.9656552979178955,
+      "cv_std": 0.0048905802840566,
+      "cv_accuracy": 0.9666257896692679,
+      "mean_fit_seconds": 2.1180497805277505,
+      "accuracy": 0.9777777777777777,
+      "macro_f1": 0.9771253126207275,
+      "tuning_seconds": 196.60589739994612,
+      "candidate_count": 8
     },
     {
-      "model": "RBF SVM C=1.0",
+      "model": "SVM",
       "features": "handcrafted",
-      "cv_macro_f1": 0.9393805052299458,
-      "cv_std": 0.013513079546266548,
-      "cv_accuracy": 0.9410590858416946,
-      "mean_fit_seconds": 0.38444723332456004
+      "cv_macro_f1": 0.9462687230955114,
+      "cv_std": 0.011281246091905669,
+      "cv_accuracy": 0.9477220364176886,
+      "mean_fit_seconds": 0.14109015464782715,
+      "accuracy": 0.9733333333333334,
+      "macro_f1": 0.9725921715121,
+      "tuning_seconds": 37.00940969999647,
+      "candidate_count": 8
     },
     {
-      "model": "Logistic regression C=0.1",
+      "model": "KNN",
+      "features": "handcrafted",
+      "cv_macro_f1": 0.9271721957247401,
+      "cv_std": 0.021400988779447728,
+      "cv_accuracy": 0.9288182831661093,
+      "mean_fit_seconds": 0.07032656669616699,
+      "accuracy": 0.9422222222222222,
+      "macro_f1": 0.9411764705882353,
+      "tuning_seconds": 10.873512399964966,
+      "candidate_count": 12
+    },
+    {
+      "model": "Logistic Regression",
       "features": "handcrafted",
       "cv_macro_f1": 0.9181532591529185,
       "cv_std": 0.017011229346340948,
       "cv_accuracy": 0.9198996655518394,
-      "mean_fit_seconds": 0.11419196667460103
+      "mean_fit_seconds": 0.09281802177429199,
+      "accuracy": 0.9244444444444444,
+      "macro_f1": 0.9226788493804201,
+      "tuning_seconds": 3.1148616999853402,
+      "candidate_count": 8
     },
     {
-      "model": "Logistic regression C=1.0",
+      "model": "Decision Tree",
       "features": "handcrafted",
-      "cv_macro_f1": 0.9158946560838471,
-      "cv_std": 0.02334991715342583,
-      "cv_accuracy": 0.917670011148272,
-      "mean_fit_seconds": 0.058903333342944585
-    },
-    {
-      "model": "5-nearest neighbors",
-      "features": "handcrafted",
-      "cv_macro_f1": 0.8867056450626966,
-      "cv_std": 0.043837331555444815,
-      "cv_accuracy": 0.8910107766629506,
-      "mean_fit_seconds": 0.025976699970973034
-    },
-    {
-      "model": "Majority baseline",
-      "features": "handcrafted",
-      "cv_macro_f1": 0.3637646305786079,
-      "cv_std": 0.0005528357925498471,
-      "cv_accuracy": 0.5717465626161279,
-      "mean_fit_seconds": 0.0023981333166981735
+      "cv_macro_f1": 0.9150601343344009,
+      "cv_std": 0.027188941300004616,
+      "cv_accuracy": 0.9165440356744704,
+      "mean_fit_seconds": 0.3933270772298177,
+      "accuracy": 0.92,
+      "macro_f1": 0.9172523700555737,
+      "tuning_seconds": 23.871798699954525,
+      "candidate_count": 12
     }
   ],
   "limitations": [
     "Research prototype; not a disease diagnosis or food-safety test.",
     "Whole-image features may learn background, lighting or basil variety rather than health.",
     "No calibrated confidence or reliable non-leaf/out-of-distribution detector is provided.",
-    "No external-site or new-plant validation has been performed."
+    "No external-site or new-plant validation has been performed.",
+    "The fixed holdout was evaluated in earlier project runs; it is not a new external test."
   ],
   "dataset_scope": "complete_listed_counts",
   "transfer_compared": false

@@ -1,0 +1,15 @@
+{
+  "select__percentile": [
+    25,
+    100
+  ],
+  "model__n_neighbors": [
+    3,
+    5,
+    11
+  ],
+  "model__weights": [
+    "uniform",
+    "distance"
+  ]
+}

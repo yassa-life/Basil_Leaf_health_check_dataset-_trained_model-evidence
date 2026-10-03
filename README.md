@@ -1,137 +1,78 @@
-﻿# Basil Leaf Health Check & ML Quality Classifier
+# Group abc - Basil leaf final evaluation
 
-An end-to-end Machine Learning pipeline and local web application for classifying Basil leaf health (`Healthy` vs `Unhealthy`) using handcrafted visual feature extraction and trained classifiers.
+The final submission contains exactly six classical models: Logistic Regression, SVM, KNN, Decision Tree, Random Forest and Gradient Boosting. CNN is a separate supplementary experiment. The assignment PDFs in `final/` and all historical `progress/` work are preserved.
 
----
+## Run from zero
 
-## 🌿 Project Overview
+Use Python 3.13 (the measured environment) or a compatible Python version with the pinned dependencies. Put the assigned images into these four folders under `data/raw/`:
 
-This project provides a complete Machine Learning workflow and an interactive local Flask web interface for evaluating the health of basil plant leaves. 
+- `Amravati_Region_Basil_Plant_Healthy`
+- `Nagpur_Region_Basil_Plant_Healthy`
+- `Pune_Region_Basil_Plant_Healthy`
+- `Basil_Plant_Unhealthy`
 
-- **Interactive Web Dashboard**: Upload leaf photos to get instant health predictions.
-- **Handcrafted Visual Feature Pipeline**: Combines color distribution (RGB & HSV), texture analysis (Local Binary Patterns - LBP), and edge/shape features (Histogram of Oriented Gradients - HOG).
-- **Rigorous Model Evaluation**: Evaluated using grouped 3-fold cross-validation and an independent holdout dataset.
-
----
-
-## 📊 Dataset & Model Performance
-
-### Dataset Information
-- **Source**: [IEEE DataPort - Leaves - India's Most Famous Basil Plant Leaves Quality Dataset](https://ieee-dataport.org/open-access/leaves-indias-most-famous-basil-plant-leaves-quality-dataset) (DOI: `10.21227/a4f6-4413`)
-- **Classes**: `Healthy` (643 unique) & `Unhealthy` (481 unique) after audit/dedupe
-- **Listed images**: 1,131 in the four labelled folders; **1,124 unique** after removing 7 exact duplicates
-- Legacy short folders (`Amravati`, `Nagpur`, `Pune`, `Bad`) are ignored for labelling
-
-### Model Evaluation Highlights
-The best classical model selected by grouped cross-validation is a **Random Forest Classifier** (98.22% holdout accuracy). A pixel **CNN** in `CNN/` reaches **98.67%** accuracy / **0.9864** macro F1 on the same holdout split.
-
-| Metric | Random Forest | CNN |
-| :--- | ---: | ---: |
-| **Accuracy** | 98.22% | **98.67%** |
-| **Macro F1-Score** | 0.9817 | **0.9864** |
-| **95% Bootstrap CI (Macro F1)** | [0.9593, 0.9957] | [0.9686, 1.0000] |
-| **Holdout** | 225 test / 899 train | 225 test / 599 train / 300 val |
-
-#### Classification Report (Holdout Test Set)
-See `outputs/results.json` for the latest classical-model per-class scores, and `CNN/results/RESULTS.md` for the CNN holdout report.
-
----
-
-## 📁 Repository Structure
-
-```
-├── app.py                         # Flask web application & API backend
-├── Basil_Leaf_ML_Workflow.ipynb   # Complete ML training & data audit notebook
-├── CNN/                           # CNN deep-learning model (notebook + outputs/analytics/results)
-│   ├── CNN_Basil_Leaf_Training.ipynb
-│   ├── train_cnn.py
-│   ├── outputs/                   # cnn_model.pt
-│   ├── analytics/                 # curves, confusion matrix, history
-│   └── results/                   # metrics, predictions, comparison
-├── parts/                         # Six-person model notebooks (each with outputs/)
-│   ├── README.md
-│   ├── _pipeline.py               # Shared data/feature helpers
-│   ├── logistic_regression/
-│   ├── svm/
-│   ├── knn/
-│   ├── decision_tree/
-│   ├── random_forest/
-│   └── gradient_boosting/
-├── start_web.bat                  # One-click Windows launch script
-├── .gitignore
-├── templates/ / static/           # Web dashboard
-├── outputs/                       # Main notebook model + reports for the web app
-└── data/raw/                      # Labelled image folders
-```
-
----
-
-## 🚀 Getting Started
-
-### 1. Prerequisites
-- Python 3.10 or higher
-- Git
-
-### 2. Environment Setup
-
-Clone the repository and create a virtual environment:
-
-```bash
-git clone https://github.com/yassa-life/Basil_Leaf_health_check_dataset-_trained_model-evidence.git
-cd Basil_Leaf_health_check_dataset-_trained_model-evidence
-
+```powershell
 python -m venv .venv
+.venv/Scripts/python.exe -m pip install -r requirements.txt
+.venv/Scripts/python.exe _run_all_training.py
+.venv/Scripts/python.exe CNN/train_cnn.py
+.venv/Scripts/python.exe build_report.py --group-id abc
+.venv/Scripts/python.exe -m unittest discover -s tests -v
+.venv/Scripts/python.exe app.py
 ```
 
-Activate the virtual environment:
+Torch in the measured environment is CPU-only. The two CNN trials take longer than the classical search. `--epochs N` controls the maximum per trial (default 16); patience-4 early stopping can finish earlier. Reports read completed training outputs; they do not retrain models.
 
-- **Windows (PowerShell)**:
-  ```powershell
-  .\.venv\Scripts\Activate.ps1
-  ```
-- **Linux / macOS**:
-  ```bash
-  source .venv/bin/activate
-  ```
+The report files are `output/pdf/abc.pdf` (six-model group report, <=15 pages) and `output/pdf/abc_CNN.pdf` (separate CNN supplement). The main PDF title uses the supplied group ID, `abc`.
 
-Install the required dependencies:
-```bash
-pip install flask pillow joblib numpy scikit-image scikit-learn waitress
+## Each member's complete pipeline
+
+Open the existing notebook in their corresponding `parts/<model>/` folder using the .venv kernel and run all cells. Every notebook now covers the full pipeline, not only one assigned stage:
+
+1. Problem and model suitability.
+2. Raw-image audit, duplicate removal, EDA, grouped split and feature extraction.
+3. Fold-local scaling and feature selection, model-specific hyperparameters.
+4. GridSearchCV over two preprocessing variants for every parameter combination.
+5. Validation comparison, refit, holdout evaluation, errors and visualizations.
+6. Save, reload and predict a leaf image.
+7. Conclusions, limitations and viva discussion.
+
+To run one model from the project root:
+
+```powershell
+.venv/Scripts/python.exe _run_all_training.py --model svm
+.venv/Scripts/python.exe predict.py "path/to/leaf.jpg" --model svm
 ```
 
-To train the CNN model as well:
-```bash
-pip install torch --index-url https://download.pytorch.org/whl/cpu
-python CNN/train_cnn.py
-```
-Or open `CNN/CNN_Basil_Leaf_Training.ipynb`. Metrics and plots are written to `CNN/analytics/` and `CNN/results/`.
+Model keys: `logistic_regression`, `svm`, `knn`, `decision_tree`, `random_forest`, `gradient_boosting`. Inference also accepts `selected` (default) and `cnn`. Individual runs update only that member's artifacts; rerun all six before regenerating the group comparison/deployment/report.
 
----
+## Fair comparison and tuning
 
-## 💻 Running the Web Application
+The shared audit retains 1,124 unique images from 1,131 listed files, removing seven exact pixel duplicates. Similar images are grouped by perceptual hash. Seed 42 creates 899 development / 225 holdout images and three development folds with no shared groups. Actual plant identities are unavailable.
 
-### Option A: Using the Windows Batch File
-Double-click `start_web.bat` or run in CMD/PowerShell:
-```cmd
-start_web.bat
-```
+All classical models use 1,882 RGB/HSV/LBP/HOG features. A Pipeline fits StandardScaler and ANOVA SelectPercentile inside each training fold. Both 100% and 25% feature variants are searched. Logistic Regression tunes C; SVM tunes C/gamma; KNN tunes neighbors/weights; Decision Tree tunes depth/leaf size; Random Forest tunes leaf size/feature sampling; Gradient Boosting tunes learning rate/depth. Candidate counts and every fold score are saved. Selection uses mean development macro-F1, with accuracy and balanced accuracy also recorded. Search scores are not unbiased nested-CV estimates.
 
-### Option B: Running via Python
-```bash
-python app.py
-```
+The holdout was evaluated in earlier project runs. It is excluded from current tuning but is a **reused holdout**, not new external validation. No improvement guarantee is made. Compare current measured scores in `outputs/six_model_comparison.csv`.
 
-Once started, open your web browser and navigate to:
-👉 **[http://127.0.0.1:8001](http://127.0.0.1:8001)**
+CNN uses the same audited holdout but a 599/300 train/validation development split, training-only flips, two Adam configurations, class-weighted loss, learning-rate reduction and validation-based checkpoint selection. Its training budget and validation procedure differ, so it stays outside the six-model ranking.
 
----
+## Outputs and project scope
 
-## ⚠️ Disclaimer
+- `parts/training.py`: single source of truth for all six model searches.
+- `parts/_pipeline.py`: data audit, split and handcrafted features, also used by the web app.
+- `parts/evaluation.py`: metrics, group-bootstrap intervals and selected deployment export.
+- `parts/<model>/outputs/`: complete tuning table, preprocessing comparison, search space, saved pipeline bundle, metrics, predictions, split manifest, audit and plot.
+- `outputs/`: selected web model, six-model comparison, split/audit/environment evidence, figures and cleanup audit.
+- `CNN/`: standalone CNN notebook, training implementation, checkpoint and evidence.
+- `final/`: the two original assignment PDFs.
+- `progress/`: preserved historical preprocessing work; never used as globally fitted final-training input.
+- `Basil_Leaf_ML_Workflow.ipynb`: orchestration notebook for the same six-model workflow.
+- `app.py`, `templates/`, `static/`, `start_web.bat`: local selected-model demonstration, at http://127.0.0.1:8001.
 
-This application is an **experimental machine learning quality classification model** created for research and demonstration purposes. It does not replace professional agricultural diagnosis or food-safety evaluations. Unrelated non-leaf images cannot be reliably rejected by the current model.
+Old conflicting mixed-model comparison files are removed. Source images with unique content are not discarded just because they are unused; see cleanup notes for duplicate verification.
 
----
+## Limitations and AI declaration
 
-## 📄 License
+Whole-image features may capture background, region or camera conditions. Unhealthy region metadata and plant IDs are unavailable. No external validation, calibrated confidence, disease diagnosis or reliable non-leaf rejection is provided. Images uploaded to the web app are handled in memory and not used for training. Dataset attribution: IEEE DataPort DOI `10.21227/a4f6-4413`; follow original dataset terms.
 
-This repository is shared for academic and research purposes. Dataset rights belong to the original authors on IEEE DataPort.
+Codex assisted with code, notebooks, tuning orchestration, tests, figures and report drafting. Metrics are computed from real runs. Students must review the work, declare AI assistance and demonstrate their own understanding and contribution; no individual authorship is inferred from a folder assignment.

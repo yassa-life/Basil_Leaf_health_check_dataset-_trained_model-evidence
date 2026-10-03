@@ -1,0 +1,53 @@
+{
+  "source": "https://ieee-dataport.org/open-access/leaves-indias-most-famous-basil-plant-leaves-quality-dataset",
+  "doi": "10.21227/a4f6-4413",
+  "input_count": 1131,
+  "valid_unique_count": 1124,
+  "exact_duplicates_removed": 7,
+  "rejected_images": [],
+  "class_counts": {
+    "Healthy": 643,
+    "Unhealthy": 481
+  },
+  "split_groups": 981,
+  "download_coverage": {
+    "partial_dataset": false,
+    "expected_images": 1131,
+    "downloaded_images": 1131,
+    "missing_images": 0,
+    "folders": [
+      {
+        "folder": "Amravati_Region_Basil_Plant_Healthy",
+        "class": "Healthy",
+        "expected": 31,
+        "downloaded": 31,
+        "missing": 0,
+        "complete": true
+      },
+      {
+        "folder": "Nagpur_Region_Basil_Plant_Healthy",
+        "class": "Healthy",
+        "expected": 473,
+        "downloaded": 473,
+        "missing": 0,
+        "complete": true
+      },
+      {
+        "folder": "Pune_Region_Basil_Plant_Healthy",
+        "class": "Healthy",
+        "expected": 146,
+        "downloaded": 146,
+        "missing": 0,
+        "complete": true
+      },
+      {
+        "folder": "Basil_Plant_Unhealthy",
+        "class": "Unhealthy",
+        "expected": 481,
+        "downloaded": 481,
+        "missing": 0,
+        "complete": true
+      }
+    ]
+  }
+}

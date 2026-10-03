@@ -1,31 +1,71 @@
 {
-  "model_name": "SVM (rbf kernel)",
-  "pipeline_stage": "Data Preprocessing & Split",
-  "kernel": "rbf",
-  "support_vectors_per_class": [
-    367,
-    305
+  "accuracy": 0.9733333333333334,
+  "balanced_accuracy": 0.9700823643410852,
+  "macro_f1": 0.9725921715121,
+  "macro_f1_group_bootstrap_95_interval": [
+    0.9496208934781614,
+    0.990677846964696
   ],
-  "accuracy": 0.9777777777777777,
-  "macro_f1": 0.977193942711184,
-  "precision": 0.9794721407624634,
-  "recall": 0.9752906976744187,
-  "fit_time_seconds": 1.2508057000814006,
+  "classifier_ms_per_image": 0.33283911102140945,
+  "test_images": 225,
+  "classification_report": {
+    "Healthy": {
+      "precision": 0.9624060150375939,
+      "recall": 0.9922480620155039,
+      "f1-score": 0.9770992366412213,
+      "support": 129.0
+    },
+    "Unhealthy": {
+      "precision": 0.9891304347826086,
+      "recall": 0.9479166666666666,
+      "f1-score": 0.9680851063829787,
+      "support": 96.0
+    },
+    "accuracy": 0.9733333333333334,
+    "macro avg": {
+      "precision": 0.9757682249101013,
+      "recall": 0.9700823643410852,
+      "f1-score": 0.9725921715121,
+      "support": 225.0
+    },
+    "weighted avg": {
+      "precision": 0.9738084341288002,
+      "recall": 0.9733333333333334,
+      "f1-score": 0.9732532077310379,
+      "support": 225.0
+    }
+  },
   "confusion_matrix": [
     [
       128,
       1
     ],
     [
-      4,
-      92
+      5,
+      91
     ]
   ],
-  "n_train": 899,
-  "n_test": 225,
   "classes": [
     "Healthy",
     "Unhealthy"
   ],
-  "feature_version": "rgb-hsv-lbp-hog-v1"
+  "model_name": "SVM",
+  "best_params": {
+    "model__C": 10,
+    "model__gamma": "scale",
+    "select__percentile": 25
+  },
+  "cv_macro_f1": 0.9462687230955114,
+  "cv_std": 0.011281246091905669,
+  "cv_accuracy": 0.9477220364176886,
+  "mean_fit_seconds": 0.14109015464782715,
+  "tuning_seconds": 37.00940969999647,
+  "refit_seconds": 0.3107280731201172,
+  "candidate_count": 8,
+  "cv_fits": 24,
+  "n_train": 899,
+  "n_test": 225,
+  "dataset_fingerprint": "45649c31a10fc7497fd7e5875b8adcf043ed607a184cb90742f06882bf040e1d",
+  "rationale": "RBF kernel captures nonlinear boundaries; C and gamma control complexity and locality.",
+  "selection": "Highest grouped development CV macro-F1; test excluded."
 }

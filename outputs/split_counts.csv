@@ -1,4 +1,4 @@
-label,All unique images,Development / final training,Untouched test
+label,All unique images,Development / final training,Holdout test
 Healthy,643,514,129
 Unhealthy,481,385,96
 TOTAL,1124,899,225

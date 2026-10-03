@@ -1,27 +1,18 @@
-# Six-Person Model Assignment
+# Six individual end-to-end models
 
-Each of the six group members trains **one machine learning model** end-to-end on the shared labelled dataset under `data/raw/`, and owns one stage of the pipeline narrative.
+Each existing notebook now performs data audit, EDA, feature extraction, fold-local preprocessing, model-specific tuning, comparison of parameter varieties, final evaluation, export and reload/inference. Run from the project .venv. See the root README for commands.
 
-## Model directories
+| Folder | Model | Tuned settings |
+|---|---|---|
+| logistic_regression | Logistic Regression | C, feature percentage |
+| svm | RBF SVM | C, gamma, feature percentage |
+| knn | KNN | neighbors, weights, feature percentage |
+| decision_tree | Decision Tree | depth, leaf size, feature percentage |
+| random_forest | Random Forest | leaf size, feature sampling, feature percentage |
+| gradient_boosting | Gradient Boosting | learning rate, depth, feature percentage |
 
-Every member folder has a notebook and an `outputs/` directory for that model only. There is **no shared `parts/artifacts/` folder** — each notebook loads images from `data/raw`, extracts RGB/HSV/LBP/HOG features, trains its model, and writes metrics/models into its own `outputs/`.
+`training.py` defines all searches; `_pipeline.py` provides identical data and features; `evaluation.py` computes metrics and exports the validation-selected deployment artifact. Model bundles contain `estimator`, class order, feature version and dataset fingerprint. Do not load untrusted serialized files.
 
-| Member | Folder | Notebook | Assigned ML Model | Pipeline Stage | Primary Outputs |
-|---|---|---|---|---|---|
-| Person 1 | `parts/logistic_regression/` | `logistic_regression_data_collection.ipynb` | Logistic Regression | Data Collection & Inventory | `outputs/logistic_regression_model.joblib`, `outputs/logistic_regression_metrics.json` |
-| Person 2 | `parts/svm/` | `svm_data_preprocessing.ipynb` | SVM | Data Preprocessing & Split | `outputs/svm_model.joblib`, `outputs/svm_metrics.json` |
-| Person 3 | `parts/knn/` | `knn_feature_engineering.ipynb` | KNN | Feature Engineering | `outputs/knn_model.joblib`, `outputs/knn_metrics.json` |
-| Person 4 | `parts/decision_tree/` | `decision_tree_model_selection.ipynb` | Decision Tree | Model Selection | `outputs/decision_tree_model.joblib`, `outputs/decision_tree_metrics.json` |
-| Person 5 | `parts/random_forest/` | `random_forest_training_evaluation.ipynb` | Random Forest | Training & Evaluation | `outputs/random_forest_model.joblib`, `outputs/random_forest_metrics.json` |
-| Person 6 | `parts/gradient_boosting/` | `gradient_boosting_deployment_reporting.ipynb` | Gradient Boosting | Deployment Reporting | `outputs/gradient_boosting_model.joblib`, `outputs/gradient_boosting_metrics.json`, `outputs/model_comparison_6_members.csv` |
+CNN remains outside these six folders and outside the comparison. The preserved historical progress notebooks are not final-training inputs. A notebook filename's old stage name is historical; its content now covers the entire pipeline.
 
-Shared helper: `parts/_pipeline.py` (dataset discovery, audit, split, handcrafted features).
-
-A seventh **CNN** model lives outside `parts/` at `CNN/` (pixel CNN instead of handcrafted features). Notebook, model weights, analytics, and holdout results are kept under `CNN/outputs/`, `CNN/analytics/`, and `CNN/results/`.
-
-## Rules
-
-- Use the project `.venv` kernel.
-- Only the four labelled folders under `data/raw/` are used (`*_Healthy` + `Basil_Plant_Unhealthy`). Legacy short folders (`Amravati`, `Nagpur`, `Pune`, `Bad`) are ignored.
-- Each notebook writes only to its own `outputs/` folder.
-- The production Flask app still loads the selected model from the root `outputs/model.joblib` produced by `Basil_Leaf_ML_Workflow.ipynb`.
+Every model output folder contains all CV candidate/fold scores, best parameters, preprocessing comparison, test predictions, confusion/tuning plot, audit and split manifest. The main comparison is `outputs/six_model_comparison.csv` at project root.

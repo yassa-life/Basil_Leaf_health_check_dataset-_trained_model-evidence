@@ -1,39 +1,71 @@
 {
-  "model_name": "Decision Tree (max_depth=5)",
-  "pipeline_stage": "Model Selection & Cross Validation",
-  "max_depth": 5,
-  "accuracy": 0.9688888888888889,
-  "macro_f1": 0.9681618791566435,
-  "precision": 0.9688259109311741,
-  "recall": 0.9675387596899225,
-  "fit_time_seconds": 0.8043430999387056,
+  "accuracy": 0.92,
+  "balanced_accuracy": 0.9129118217054264,
+  "macro_f1": 0.9172523700555737,
+  "macro_f1_group_bootstrap_95_interval": [
+    0.8572243441600145,
+    0.9638897634457532
+  ],
+  "classifier_ms_per_image": 0.021254666822238102,
+  "test_images": 225,
+  "classification_report": {
+    "Healthy": {
+      "precision": 0.9051094890510949,
+      "recall": 0.9612403100775194,
+      "f1-score": 0.9323308270676691,
+      "support": 129.0
+    },
+    "Unhealthy": {
+      "precision": 0.9431818181818182,
+      "recall": 0.8645833333333334,
+      "f1-score": 0.9021739130434783,
+      "support": 96.0
+    },
+    "accuracy": 0.92,
+    "macro avg": {
+      "precision": 0.9241456536164565,
+      "recall": 0.9129118217054264,
+      "f1-score": 0.9172523700555737,
+      "support": 225.0
+    },
+    "weighted avg": {
+      "precision": 0.9213536828135369,
+      "recall": 0.92,
+      "f1-score": 0.9194638770840144,
+      "support": 225.0
+    }
+  },
   "confusion_matrix": [
     [
-      126,
-      3
+      124,
+      5
     ],
     [
-      4,
-      92
+      13,
+      83
     ]
   ],
-  "top_10_features": [
-    60,
-    84,
-    14,
-    69,
-    20,
-    55,
-    7,
-    97,
-    1148,
-    70
-  ],
-  "n_train": 899,
-  "n_test": 225,
   "classes": [
     "Healthy",
     "Unhealthy"
   ],
-  "feature_version": "rgb-hsv-lbp-hog-v1"
+  "model_name": "Decision Tree",
+  "best_params": {
+    "model__max_depth": null,
+    "model__min_samples_leaf": 2,
+    "select__percentile": 25
+  },
+  "cv_macro_f1": 0.9150601343344009,
+  "cv_std": 0.027188941300004616,
+  "cv_accuracy": 0.9165440356744704,
+  "mean_fit_seconds": 0.3933270772298177,
+  "tuning_seconds": 23.871798699954525,
+  "refit_seconds": 0.24219679832458496,
+  "candidate_count": 12,
+  "cv_fits": 36,
+  "n_train": 899,
+  "n_test": 225,
+  "dataset_fingerprint": "45649c31a10fc7497fd7e5875b8adcf043ed607a184cb90742f06882bf040e1d",
+  "rationale": "Interpretable nonlinear rules; depth and leaf size limit overfitting.",
+  "selection": "Highest grouped development CV macro-F1; test excluded."
 }

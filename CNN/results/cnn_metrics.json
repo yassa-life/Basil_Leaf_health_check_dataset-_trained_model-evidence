@@ -4,29 +4,49 @@
   "pipeline_stage": "Deep Learning Image Classification",
   "feature_version": "cnn-rgb-128-v1",
   "img_size": 128,
-  "epochs": 20,
+  "epochs": 16,
+  "max_epochs": 16,
+  "early_stopping_patience": 4,
+  "tuning_trials": [
+    {
+      "trial": 0,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "best_val_macro_f1": 0.9657909140667762,
+      "epochs_run": 16
+    },
+    {
+      "trial": 1,
+      "lr": 0.0003,
+      "weight_decay": 0.001,
+      "best_val_macro_f1": 0.976265554538365,
+      "epochs_run": 16
+    }
+  ],
+  "augmentation": "training-only horizontal and vertical flips",
   "batch_size": 32,
-  "learning_rate": 0.001,
+  "learning_rate": 0.0003,
+  "weight_decay": 0.001,
   "optimizer": "Adam",
-  "best_val_macro_f1": 0.989769820971867,
+  "best_val_macro_f1": 0.976265554538365,
   "accuracy": 0.9866666666666667,
-  "macro_f1": 0.986355091067133,
-  "precision": 0.9870445344129555,
-  "recall": 0.9857073643410852,
-  "test_loss": 0.04887925909625008,
+  "macro_f1": 0.986391403399125,
+  "precision": 0.9857844716494846,
+  "recall": 0.9870397286821706,
+  "test_loss": 0.06517431669757975,
   "bootstrap_95_ci": [
-    0.9685885802038252,
+    0.9692843599561761,
     1.0
   ],
-  "fit_time_seconds": 669.4408142999746,
+  "fit_time_seconds": 1192.5041441000067,
   "confusion_matrix": [
     [
-      128,
-      1
+      127,
+      2
     ],
     [
-      2,
-      94
+      1,
+      95
     ]
   ],
   "n_train": 599,
@@ -48,7 +68,7 @@
     },
     "split_groups": 981
   },
-  "created_utc": "2026-09-15T07:21:34.882021+00:00",
+  "created_utc": "2026-09-27T10:41:12.180111+00:00",
   "torch_version": "2.14.0+cpu",
   "device": "cpu"
 }

@@ -1,26 +1,70 @@
 {
-  "model_name": "Logistic Regression",
-  "pipeline_stage": "Data Collection & Inventory",
-  "accuracy": 0.9422222222222222,
-  "macro_f1": 0.9410294147295417,
-  "precision": 0.9404800257731959,
-  "recall": 0.9416182170542635,
-  "fit_time_seconds": 0.1499195999931544,
+  "accuracy": 0.9244444444444444,
+  "balanced_accuracy": 0.9221172480620154,
+  "macro_f1": 0.9226788493804201,
+  "macro_f1_group_bootstrap_95_interval": [
+    0.8842788369828218,
+    0.9562295618051013
+  ],
+  "classifier_ms_per_image": 0.03591555558765928,
+  "test_images": 225,
+  "classification_report": {
+    "Healthy": {
+      "precision": 0.9307692307692308,
+      "recall": 0.937984496124031,
+      "f1-score": 0.9343629343629344,
+      "support": 129.0
+    },
+    "Unhealthy": {
+      "precision": 0.9157894736842105,
+      "recall": 0.90625,
+      "f1-score": 0.9109947643979057,
+      "support": 96.0
+    },
+    "accuracy": 0.9244444444444444,
+    "macro avg": {
+      "precision": 0.9232793522267206,
+      "recall": 0.9221172480620154,
+      "f1-score": 0.9226788493804201,
+      "support": 225.0
+    },
+    "weighted avg": {
+      "precision": 0.9243778677462887,
+      "recall": 0.9244444444444444,
+      "f1-score": 0.9243925151778555,
+      "support": 225.0
+    }
+  },
   "confusion_matrix": [
     [
-      122,
-      7
+      121,
+      8
     ],
     [
-      6,
-      90
+      9,
+      87
     ]
   ],
-  "n_train": 899,
-  "n_test": 225,
   "classes": [
     "Healthy",
     "Unhealthy"
   ],
-  "feature_version": "rgb-hsv-lbp-hog-v1"
+  "model_name": "Logistic Regression",
+  "best_params": {
+    "model__C": 0.1,
+    "select__percentile": 100
+  },
+  "cv_macro_f1": 0.9181532591529185,
+  "cv_std": 0.017011229346340948,
+  "cv_accuracy": 0.9198996655518394,
+  "mean_fit_seconds": 0.09281802177429199,
+  "tuning_seconds": 3.1148616999853402,
+  "refit_seconds": 0.1782848834991455,
+  "candidate_count": 8,
+  "cv_fits": 24,
+  "n_train": 899,
+  "n_test": 225,
+  "dataset_fingerprint": "45649c31a10fc7497fd7e5875b8adcf043ed607a184cb90742f06882bf040e1d",
+  "rationale": "Regularized linear boundary; C controls complexity with high-dimensional features.",
+  "selection": "Highest grouped development CV macro-F1; test excluded."
 }

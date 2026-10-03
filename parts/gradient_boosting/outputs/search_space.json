@@ -1,0 +1,14 @@
+{
+  "select__percentile": [
+    25,
+    100
+  ],
+  "model__learning_rate": [
+    0.05,
+    0.1
+  ],
+  "model__max_depth": [
+    2,
+    3
+  ]
+}

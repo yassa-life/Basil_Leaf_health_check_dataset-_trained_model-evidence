@@ -1,0 +1,50 @@
+[
+  {
+    "folder": "Amravati",
+    "files": 31,
+    "not_duplicated": 31,
+    "unique_examples": [
+      "data\\raw\\Amravati\\Good.jpeg",
+      "data\\raw\\Amravati\\WhatsApp Image 2019-09-04 at 21.00.49 (1).jpeg",
+      "data\\raw\\Amravati\\WhatsApp Image 2019-09-04 at 21.00.49.jpeg",
+      "data\\raw\\Amravati\\WhatsApp Image 2019-09-04 at 21.00.50 (1).jpeg",
+      "data\\raw\\Amravati\\WhatsApp Image 2019-09-04 at 21.00.50.jpeg"
+    ]
+  },
+  {
+    "folder": "Nagpur",
+    "files": 473,
+    "not_duplicated": 473,
+    "unique_examples": [
+      "data\\raw\\Nagpur\\IMG-20191027-WA0053.jpg",
+      "data\\raw\\Nagpur\\IMG-20191027-WA0054.jpg",
+      "data\\raw\\Nagpur\\IMG-20191027-WA0055.jpg",
+      "data\\raw\\Nagpur\\IMG-20191027-WA0056.jpg",
+      "data\\raw\\Nagpur\\IMG-20191027-WA0057.jpg"
+    ]
+  },
+  {
+    "folder": "Pune",
+    "files": 146,
+    "not_duplicated": 146,
+    "unique_examples": [
+      "data\\raw\\Pune\\IMG_20190904_205214.jpg",
+      "data\\raw\\Pune\\IMG_20190904_205231.jpg",
+      "data\\raw\\Pune\\IMG_20190904_205239.jpg",
+      "data\\raw\\Pune\\IMG_20190904_205248.jpg",
+      "data\\raw\\Pune\\IMG_20190904_205302.jpg"
+    ]
+  },
+  {
+    "folder": "Bad",
+    "files": 481,
+    "not_duplicated": 118,
+    "unique_examples": [
+      "data\\raw\\Bad\\IMG_20201217_112345.jpg",
+      "data\\raw\\Bad\\IMG_20201217_112348.jpg",
+      "data\\raw\\Bad\\IMG_20201217_112352.jpg",
+      "data\\raw\\Bad\\IMG_20201217_112357.jpg",
+      "data\\raw\\Bad\\IMG_20201217_112408.jpg"
+    ]
+  }
+]

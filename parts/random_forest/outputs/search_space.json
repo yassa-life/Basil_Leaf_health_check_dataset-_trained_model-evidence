@@ -1,0 +1,14 @@
+{
+  "select__percentile": [
+    25,
+    100
+  ],
+  "model__min_samples_leaf": [
+    1,
+    3
+  ],
+  "model__max_features": [
+    "sqrt",
+    0.3
+  ]
+}

@@ -1,57 +1,11 @@
-﻿# CNN Basil Leaf Classifier
+# Separate CNN experiment
 
-Convolutional Neural Network for basil leaf health classification (`Healthy` vs `Unhealthy`), using the same labelled folders under `data/raw/` as the classical ML notebooks.
+Run `python CNN/train_cnn.py` from the project environment, or run all cells in `CNN_Basil_Leaf_Training.ipynb`. Infer with `python predict.py IMAGE --model cnn`.
 
-## Layout
+Uses 128x128 normalized RGB pixels; four Conv/BatchNorm/ReLU/pooling blocks (32/64/128/256 channels), dense 256 and two output logits, with dropout 0.4/0.3. The same audited classical holdout is retained. Development images are split into training and validation, and only training receives random horizontal/vertical flips.
 
-```
-CNN/
-├── CNN_Basil_Leaf_Training.ipynb   # Jupyter notebook (run this)
-├── train_cnn.py                    # Same pipeline as a CLI script
-├── README.md
-├── outputs/                        # Trained model
-│   └── cnn_model.pt
-├── analytics/                      # Training plots, history, dataset roles
-│   ├── ANALYTICS.md
-│   ├── training_history.csv
-│   ├── training_curves.png
-│   ├── confusion_matrix.png
-│   └── dataset_manifest.csv
-└── results/                        # Holdout metrics, predictions, comparison
-    ├── RESULTS.md
-    ├── cnn_metrics.json
-    ├── class_performance.json
-    ├── test_predictions.csv
-    └── model_comparison_with_cnn.csv
-```
+Two Adam settings are evaluated: learning rate 0.001 with weight decay 0.0001, and learning rate 0.0003 with weight decay 0.001. Each has at most 16 epochs, class-weighted cross entropy, ReduceLROnPlateau and patience-4 early stopping. The best validation macro-F1 checkpoint across trials is restored before holdout evaluation. Use `--epochs N` to change the per-trial cap.
 
-## Holdout results (already trained)
+Artifacts: `outputs/cnn_model.pt`; `results/tuning_results.csv`, `cnn_metrics.json`, `class_performance.json`, `test_predictions.csv`, `RESULTS.md`; `analytics/all_trials_history.csv`, `training_history.csv`, `training_curves.png`, `confusion_matrix.png`, `dataset_manifest.csv`.
 
-| Metric | Score |
-| :--- | ---: |
-| Accuracy | **98.67%** |
-| Macro F1 | **0.9864** |
-| 95% CI | [0.9686, 1.0000] |
-| Errors | 3 / 225 (128+94 correct) |
-
-CNN outperforms the six classical models on the same grouped holdout split.
-
-## Run
-
-From the project root with `.venv` activated:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-pip install torch --index-url https://download.pytorch.org/whl/cpu
-python CNN/train_cnn.py
-```
-
-Or open `CNN/CNN_Basil_Leaf_Training.ipynb` and run all cells. If `outputs/cnn_model.pt` already exists, the notebook loads the saved analytics/results instead of retraining (~11 minutes on CPU).
-
-## Method
-
-- Shared audit / grouped holdout split from `parts/_pipeline.py` (no leakage across near-duplicate groups)
-- Images resized to 128×128 RGB, normalized to [-1, 1]
-- Custom CNN: 4× (Conv2d + BatchNorm + ReLU + MaxPool) then Dropout + Linear head
-- 20 epochs, Adam, class-weighted CrossEntropyLoss
-- Best validation macro-F1 checkpoint evaluated on the holdout set
+The 95% F1 interval resamples perceptual groups. This is a reused holdout and not new external validation. CNN has a different training budget and validation procedure from the six classical models. Its separate report is `output/pdf/abc_CNN.pdf`; it is excluded from the six-model comparison.

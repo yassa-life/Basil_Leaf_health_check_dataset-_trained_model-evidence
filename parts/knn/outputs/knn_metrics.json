@@ -1,27 +1,71 @@
 {
-  "model_name": "K-Nearest Neighbors (k=1)",
-  "pipeline_stage": "Feature Engineering",
-  "optimal_k": 1,
-  "accuracy": 0.9688888888888889,
-  "macro_f1": 0.9680715197956578,
-  "precision": 0.9703079178885631,
-  "recall": 0.9662063953488371,
-  "fit_time_seconds": 0.036338399979285896,
+  "accuracy": 0.9422222222222222,
+  "balanced_accuracy": 0.9429505813953488,
+  "macro_f1": 0.9411764705882353,
+  "macro_f1_group_bootstrap_95_interval": [
+    0.897945945945946,
+    0.9770556760618834
+  ],
+  "classifier_ms_per_image": 0.05693911109119654,
+  "test_images": 225,
+  "classification_report": {
+    "Healthy": {
+      "precision": 0.9603174603174603,
+      "recall": 0.937984496124031,
+      "f1-score": 0.9490196078431372,
+      "support": 129.0
+    },
+    "Unhealthy": {
+      "precision": 0.9191919191919192,
+      "recall": 0.9479166666666666,
+      "f1-score": 0.9333333333333333,
+      "support": 96.0
+    },
+    "accuracy": 0.9422222222222222,
+    "macro avg": {
+      "precision": 0.9397546897546898,
+      "recall": 0.9429505813953488,
+      "f1-score": 0.9411764705882353,
+      "support": 225.0
+    },
+    "weighted avg": {
+      "precision": 0.9427705627705628,
+      "recall": 0.9422222222222222,
+      "f1-score": 0.9423267973856209,
+      "support": 225.0
+    }
+  },
   "confusion_matrix": [
     [
-      127,
-      2
+      121,
+      8
     ],
     [
       5,
       91
     ]
   ],
-  "n_train": 899,
-  "n_test": 225,
   "classes": [
     "Healthy",
     "Unhealthy"
   ],
-  "feature_version": "rgb-hsv-lbp-hog-v1"
+  "model_name": "KNN",
+  "best_params": {
+    "model__n_neighbors": 3,
+    "model__weights": "distance",
+    "select__percentile": 25
+  },
+  "cv_macro_f1": 0.9271721957247401,
+  "cv_std": 0.021400988779447728,
+  "cv_accuracy": 0.9288182831661093,
+  "mean_fit_seconds": 0.07032656669616699,
+  "tuning_seconds": 10.873512399964966,
+  "refit_seconds": 0.04962921142578125,
+  "candidate_count": 12,
+  "cv_fits": 36,
+  "n_train": 899,
+  "n_test": 225,
+  "dataset_fingerprint": "45649c31a10fc7497fd7e5875b8adcf043ed607a184cb90742f06882bf040e1d",
+  "rationale": "Local similarity baseline; neighbors and distance weights control smoothing.",
+  "selection": "Highest grouped development CV macro-F1; test excluded."
 }

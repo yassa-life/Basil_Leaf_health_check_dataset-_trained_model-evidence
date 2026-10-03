@@ -1,0 +1,15 @@
+{
+  "select__percentile": [
+    25,
+    100
+  ],
+  "model__max_depth": [
+    3,
+    6,
+    null
+  ],
+  "model__min_samples_leaf": [
+    2,
+    5
+  ]
+}

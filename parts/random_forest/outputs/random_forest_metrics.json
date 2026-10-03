@@ -1,53 +1,71 @@
 {
-  "model_name": "Random Forest",
-  "pipeline_stage": "Final Fit & Held-Out Evaluation",
-  "n_estimators": 200,
-  "accuracy": 0.9822222222222222,
-  "macro_f1": 0.9817281143414001,
-  "bootstrap_95_ci": [
-    0.9633369459139801,
-    0.995495630322645
+  "accuracy": 0.9777777777777777,
+  "balanced_accuracy": 0.9739583333333333,
+  "macro_f1": 0.9771253126207275,
+  "macro_f1_group_bootstrap_95_interval": [
+    0.9513668549880261,
+    0.9952674807870339
   ],
-  "precision": 0.9849624060150376,
-  "recall": 0.9791666666666667,
-  "fit_time_seconds": 1.654511799919419,
+  "classifier_ms_per_image": 0.36183866646347773,
+  "test_images": 225,
+  "classification_report": {
+    "Healthy": {
+      "precision": 0.9626865671641791,
+      "recall": 1.0,
+      "f1-score": 0.9809885931558935,
+      "support": 129.0
+    },
+    "Unhealthy": {
+      "precision": 1.0,
+      "recall": 0.9479166666666666,
+      "f1-score": 0.9732620320855615,
+      "support": 96.0
+    },
+    "accuracy": 0.9777777777777777,
+    "macro avg": {
+      "precision": 0.9813432835820896,
+      "recall": 0.9739583333333333,
+      "f1-score": 0.9771253126207275,
+      "support": 225.0
+    },
+    "weighted avg": {
+      "precision": 0.9786069651741294,
+      "recall": 0.9777777777777777,
+      "f1-score": 0.9776919270992186,
+      "support": 225.0
+    }
+  },
   "confusion_matrix": [
     [
       129,
       0
     ],
     [
-      4,
-      92
+      5,
+      91
     ]
   ],
-  "top_20_features": [
-    60,
-    59,
-    61,
-    69,
-    107,
-    89,
-    84,
-    24,
-    104,
-    20,
-    101,
-    90,
-    40,
-    73,
-    95,
-    21,
-    13,
-    68,
-    39,
-    94
-  ],
-  "n_train": 899,
-  "n_test": 225,
   "classes": [
     "Healthy",
     "Unhealthy"
   ],
-  "feature_version": "rgb-hsv-lbp-hog-v1"
+  "model_name": "Random Forest",
+  "best_params": {
+    "model__max_features": "sqrt",
+    "model__min_samples_leaf": 1,
+    "select__percentile": 100
+  },
+  "cv_macro_f1": 0.9656552979178955,
+  "cv_std": 0.0048905802840566,
+  "cv_accuracy": 0.9666257896692679,
+  "mean_fit_seconds": 2.1180497805277505,
+  "tuning_seconds": 196.60589739994612,
+  "refit_seconds": 3.4964001178741455,
+  "candidate_count": 8,
+  "cv_fits": 24,
+  "n_train": 899,
+  "n_test": 225,
+  "dataset_fingerprint": "45649c31a10fc7497fd7e5875b8adcf043ed607a184cb90742f06882bf040e1d",
+  "rationale": "Averaged randomized trees reduce variance; leaf size and feature sampling regulate complexity.",
+  "selection": "Highest grouped development CV macro-F1; test excluded."
 }

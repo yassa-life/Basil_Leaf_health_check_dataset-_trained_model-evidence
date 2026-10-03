@@ -1,0 +1,14 @@
+{
+  "select__percentile": [
+    25,
+    100
+  ],
+  "model__C": [
+    1,
+    10
+  ],
+  "model__gamma": [
+    "scale",
+    0.001
+  ]
+}
