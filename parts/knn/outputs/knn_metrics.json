@@ -6,7 +6,7 @@
     0.897945945945946,
     0.9770556760618834
   ],
-  "classifier_ms_per_image": 0.05693911109119654,
+  "classifier_ms_per_image": 0.061685777683224946,
   "test_images": 225,
   "classification_report": {
     "Healthy": {
@@ -58,9 +58,9 @@
   "cv_macro_f1": 0.9271721957247401,
   "cv_std": 0.021400988779447728,
   "cv_accuracy": 0.9288182831661093,
-  "mean_fit_seconds": 0.07032656669616699,
-  "tuning_seconds": 10.873512399964966,
-  "refit_seconds": 0.04962921142578125,
+  "mean_fit_seconds": 0.05926076571146647,
+  "tuning_seconds": 8.851637799991295,
+  "refit_seconds": 0.05539274215698242,
   "candidate_count": 12,
   "cv_fits": 36,
   "n_train": 899,
