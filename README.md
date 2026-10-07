@@ -69,6 +69,10 @@ CNN uses the same audited holdout but a 599/300 train/validation development spl
 - `Basil_Leaf_ML_Workflow.ipynb`: orchestration notebook for the same six-model workflow.
 - `app.py`, `templates/`, `static/`, `start_web.bat`: local selected-model demonstration, at http://127.0.0.1:8001.
 
+## Student review readiness
+
+Every student must demonstrate at least one complete model experiment, including its preprocessing variants, hyperparameter search, validation/holdout metrics, and a prediction output. Use [STUDENT_REVIEW_CHECKLIST.md](STUDENT_REVIEW_CHECKLIST.md) to record the individual model, code section, artifacts, and command output shown during the review. A student should be able to explain the work rather than only open the saved result files.
+
 Old conflicting mixed-model comparison files are removed. Source images with unique content are not discarded just because they are unused; see cleanup notes for duplicate verification.
 
 ## Limitations and AI declaration
